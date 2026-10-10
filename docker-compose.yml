@@ -1,0 +1,102 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: vg-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - vg-net
+
+  routes-db:
+    image: postgis/postgis:16-3.4
+    container_name: vg-routes-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: routes_db
+    volumes:
+      - routes_data:/var/lib/postgresql/data
+    networks:
+      - vg-net
+
+  coldchain-db:
+    image: postgres:16
+    container_name: vg-coldchain-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5434:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: coldchain_db
+    volumes:
+      - coldchain_data:/var/lib/postgresql/data
+    networks:
+      - vg-net
+
+  registry-db:
+    image: postgres:16
+    container_name: vg-registry-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5435:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: registry_db
+    volumes:
+      - registry_data:/var/lib/postgresql/data
+    networks:
+      - vg-net
+
+  identity-db:
+    image: postgres:16
+    container_name: vg-identity-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5436:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: identity_db
+    volumes:
+      - identity_data:/var/lib/postgresql/data
+    networks:
+      - vg-net
+
+  advisor-db:
+    image: pgvector/pgvector:pg16
+    container_name: vg-advisor-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5437:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: advisor_db
+    volumes:
+      - advisor_data:/var/lib/postgresql/data
+    networks:
+      - vg-net
+
+volumes:
+  rabbitmq_data:
+  routes_data:
+  coldchain_data:
+  registry_data:
+  identity_data:
+  advisor_data:
+
+networks:
+  vg-net:
+    driver: bridge
