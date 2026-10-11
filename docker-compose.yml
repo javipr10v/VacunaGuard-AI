@@ -89,6 +89,21 @@ services:
     networks:
       - vg-net
 
+  nodered:
+    image: nodered/node-red:latest
+    container_name: vg-nodered
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1880:1880"
+    environment:
+      TZ: America/Mexico_City
+    volumes:
+      - nodered_data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - vg-net
+
 volumes:
   rabbitmq_data:
   routes_data:
@@ -96,6 +111,8 @@ volumes:
   registry_data:
   identity_data:
   advisor_data:
+  nodered_data:
+
 
 networks:
   vg-net:
