@@ -104,6 +104,44 @@ services:
     networks:
       - vg-net
 
+  n8n-db:
+    image: postgres:16
+    container_name: vg-n8n-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${N8N_DB_PASSWORD}
+      POSTGRES_DB: n8n_db
+    volumes:
+      - n8n_db_data:/var/lib/postgresql/data
+    networks:
+      - vg-net
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: vg-n8n
+    restart: unless-stopped
+    depends_on:
+      - n8n-db
+      - rabbitmq
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: n8n-db
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n_db
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: ${N8N_DB_PASSWORD}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_SECURE_COOKIE: "false"
+      GENERIC_TIMEZONE: America/Mexico_City
+      TZ: America/Mexico_City
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - vg-net
+
 volumes:
   rabbitmq_data:
   routes_data:
@@ -112,6 +150,8 @@ volumes:
   identity_data:
   advisor_data:
   nodered_data:
+  n8n_db_data:
+  n8n_data:
 
 
 networks:

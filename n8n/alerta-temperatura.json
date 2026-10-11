@@ -1,0 +1,106 @@
+{
+  "name": "Alerta temperatura crítica",
+  "nodes": [
+    {
+      "parameters": {
+        "queue": "alertas.telegram",
+        "options": {
+          "jsonParseBody": true
+        }
+      },
+      "type": "n8n-nodes-base.rabbitmqTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3a414d3e-b83c-42fa-8a9e-822ebdadb12e",
+      "name": "RabbitMQ Trigger",
+      "credentials": {
+        "rabbitmq": {
+          "id": "6cpkRGZdyGwFYCdM",
+          "name": "RabbitMQ account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8736640023",
+        "text": "=🚨 ALERTA DE CADENA DE FRÍO\nHielera: {{ $json.content.hielera }}\nTemperatura: {{ $json.content.celsius }} °C\nRango seguro: 2 a 8 °C\nSensor: {{ $json.content.sensorId }}\nFecha: {{ $json.content.fecha }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "5f5daa8d-73fd-4166-b6bc-e4b3444e732a",
+      "name": "Send a text message",
+      "webhookId": "3c92bcd8-01bc-43dd-b03e-c06d150530ba",
+      "credentials": {
+        "telegramApi": {
+          "id": "kOBDbhiNjG6eNQ5q",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "RabbitMQ Trigger": [
+      {
+        "json": {
+          "fields": {
+            "deliveryTag": 1,
+            "redelivered": false,
+            "exchange": "vacunaguard.events",
+            "routingKey": "temperatura.critica",
+            "messageCount": 7
+          },
+          "properties": {
+            "headers": {},
+            "deliveryMode": 2
+          },
+          "content": {
+            "sensorId": "sensor-01",
+            "hielera": "H-01",
+            "celsius": 9.3,
+            "rangoSeguro": [
+              2,
+              8
+            ],
+            "fecha": "2026-10-11T05:03:09.185Z"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "RabbitMQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e262c154-6cc8-4a5e-b534-86623be82de0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed99353a6eb697234cc841feab3014bc13dde9357163797907e43a16acb2b3be"
+  },
+  "nodeGroups": [],
+  "id": "C7mfQIaEvtaZwCAq",
+  "tags": []
+}
