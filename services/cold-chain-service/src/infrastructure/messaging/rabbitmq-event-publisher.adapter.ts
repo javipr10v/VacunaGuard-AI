@@ -25,7 +25,11 @@ export class RabbitMqEventPublisherAdapter
 
     this.channel = this.connection.createChannel({
       json: true,
-      setup: (ch: any) => ch.assertExchange(this.exchange, 'topic', { durable: true }),
+      setup: async (ch: any) => {
+        await ch.assertExchange(this.exchange, 'topic', { durable: true });
+        await ch.assertQueue('alertas.telegram', { durable: true });
+        await ch.bindQueue('alertas.telegram', this.exchange, 'temperatura.critica');
+      },
     });
     await this.channel.waitForConnect();
   }
