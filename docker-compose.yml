@@ -142,6 +142,17 @@ services:
     networks:
       - vg-net
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vg-ollama
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - vg-net
+
 volumes:
   rabbitmq_data:
   routes_data:
@@ -153,6 +164,7 @@ volumes:
   n8n_db_data:
   n8n_data:
 
+  ollama_data:
 
 networks:
   vg-net:
