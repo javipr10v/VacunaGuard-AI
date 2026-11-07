@@ -6,8 +6,8 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { SyncProvider } from '@/context/SyncContext';
 import { colores } from '@/theme';
 
-function Contenido() {
-  const { token, cargando } = useAuth();
+function PilaRaiz() {
+  const { cargando } = useAuth();
   if (cargando) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colores.fondo }}>
@@ -15,25 +15,10 @@ function Contenido() {
       </View>
     );
   }
-  const headerAzul = {
-    headerStyle: { backgroundColor: colores.superficie },
-    headerTintColor: colores.primario700,
-    headerTitleStyle: { fontFamily: 'Manrope_700Bold', fontSize: 16 },
-  };
   return (
-    <Stack screenOptions={{ contentStyle: { backgroundColor: colores.fondo } }}>
-      <Stack.Protected guard={!token}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!!token}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="ciudadano" options={{ headerShown: true, title: 'Alta de ciudadano', ...headerAzul }} />
-        <Stack.Screen name="nuevo-lote" options={{ headerShown: true, title: 'Nuevo lote', ...headerAzul }} />
-        <Stack.Screen name="nuevo-usuario" options={{ headerShown: true, title: 'Nuevo brigadista', ...headerAzul }} />
-        <Stack.Screen name="vacunar" options={{ headerShown: true, title: 'Aplicar vacuna', ...headerAzul }} />
-        <Stack.Screen name="red-frio" options={{ headerShown: true, title: 'Red de frío', ...headerAzul }} />
-        <Stack.Screen name="gps" options={{ headerShown: true, title: 'GPS en vivo', ...headerAzul }} />
-      </Stack.Protected>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colores.fondo } }}>
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(app)" />
     </Stack>
   );
 }
@@ -52,7 +37,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <SyncProvider>
-        <Contenido />
+        <PilaRaiz />
       </SyncProvider>
     </AuthProvider>
   );
