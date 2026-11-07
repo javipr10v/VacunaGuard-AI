@@ -5,9 +5,11 @@ import { colores, fuentes } from '@/theme';
 import { buscarCiudadano, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type VacunacionResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useSync } from '@/context/SyncContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function VacunarScreen() {
   const { encolarRegistro } = useSync();
+  const { usuario } = useAuth();
   const [curp, setCurp] = useState('');
   const [ciudadano, setCiudadano] = useState<ConsultaCiudadanoResumen | null>(null);
   const [vacuna, setVacuna] = useState('');
@@ -58,6 +60,14 @@ export default function VacunarScreen() {
       setCargando(false);
     }
   };
+
+  if (usuario?.rol !== 'BRIGADISTA') {
+    return (
+      <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido}>
+        <Alerta tipo="advertencia" titulo="Solo los brigadistas aplican vacunas" detalle={'Tu rol es ' + (usuario?.rol ?? '') + '. Contacta a tu coordinador.'} />
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">

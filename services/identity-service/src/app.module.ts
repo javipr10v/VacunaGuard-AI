@@ -16,6 +16,7 @@ import { IniciarSesionUseCase } from './application/use-cases/iniciar-sesion.use
 import { RegistrarUsuarioUseCase } from './application/use-cases/registrar-usuario.use-case';
 import { AuthController } from './infrastructure/http/auth.controller';
 import { AdminSeeder } from './infrastructure/bootstrap/admin-seeder';
+import { DemoSeeder } from './infrastructure/bootstrap/demo-seeder';
 import { UsuarioOrmEntity } from './infrastructure/persistence/usuario.orm-entity';
 import { TypeOrmUsuarioRepository } from './infrastructure/persistence/typeorm-usuario.repository';
 import { BcryptPasswordHasher } from './infrastructure/security/bcrypt-password-hasher';
@@ -71,6 +72,7 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
     JwtAuthGuard,
     RolesGuard,
     AdminSeeder,
+    DemoSeeder,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

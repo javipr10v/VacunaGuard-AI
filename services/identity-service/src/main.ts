@@ -8,6 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
   app.enableCors();
+  // El puente de desarrollo (loopback) reenvía la IP real del teléfono en X-Forwarded-For
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', 'loopback');
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
   );

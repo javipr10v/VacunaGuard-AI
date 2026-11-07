@@ -48,6 +48,7 @@ export class RegistroController {
   }
 
   @Post('vacunaciones')
+  @Roles('BRIGADISTA')
   vacunacion(@Body() dto: RegistrarVacunacionDto, @Req() req: { usuario: TokenPayload }) {
     return this.registrarVacunacion.ejecutar(dto, req.usuario.sub);
   }

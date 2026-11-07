@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Alerta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
 import { consultarProtocolo, type ResultadoConsulta } from '@/api/vacunaguard';
@@ -37,7 +38,7 @@ export default function ProtocolosScreen() {
   };
 
   return (
-    <View style={estilos.fondo}>
+    <SafeAreaView edges={['top']} style={estilos.fondo}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={estilos.contenido}>
         <Titulo texto="Consultor de protocolos" sub="Protocolos oficiales de vacunación" />
         {error ? <Alerta tipo="critico" titulo={error} /> : null}
@@ -78,7 +79,7 @@ export default function ProtocolosScreen() {
           <Text style={{ color: '#fff' }}>➤</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

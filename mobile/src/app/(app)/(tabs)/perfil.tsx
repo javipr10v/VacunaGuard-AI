@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, Boton, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
@@ -6,7 +7,8 @@ import { colores, fuentes } from '@/theme';
 export default function PerfilScreen() {
   const { usuario, salir } = useAuth();
   return (
-    <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido}>
+    <SafeAreaView edges={['top']} style={estilos.fondo}>
+    <ScrollView contentContainerStyle={estilos.contenido}>
       <Titulo texto="Mi perfil" sub="Sesión de brigadista" />
       <Tarjeta>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -20,6 +22,7 @@ export default function PerfilScreen() {
       </Tarjeta>
       <Boton titulo="Cerrar sesión" onPress={salir} variante="fantasma" />
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

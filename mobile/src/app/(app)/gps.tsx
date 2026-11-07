@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import { io, type Socket } from 'socket.io-client';
 import { base, ErrorApi } from '@/api/client';
 import { enviarUbicacion, ubicacionesRecientes, type UbicacionResumen } from '@/api/vacunaguard';
+import { guardarCache, leerCache } from '@/storage/cola';
 import { useAuth } from '@/context/AuthContext';
 import { useSync } from '@/context/SyncContext';
 import { Alerta, Boton, Tarjeta, Titulo } from '@/components/ui';
@@ -19,10 +20,21 @@ export default function GpsScreen() {
   const intervalo = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    ubicacionesRecientes(5).then(setUbicaciones).catch(() => undefined);
+    ubicacionesRecientes(5)
+      .then((u) => { setUbicaciones(u); guardarCache('ubicaciones', JSON.stringify(u)); })
+      .catch(() => {
+        const cache = leerCache('ubicaciones');
+        if (cache) {
+          try { setUbicaciones(JSON.parse(cache) as UbicacionResumen[]); } catch { /* cache dañada */ }
+        }
+      });
     const socket: Socket = io(base('routes'), { path: '/socket.io' });
     socket.on('ubicacion', (u: UbicacionResumen) => {
-      setUbicaciones((prev) => [u, ...prev.filter((x) => x.brigadistaId !== u.brigadistaId)].slice(0, 25));
+      setUbicaciones((prev) => {
+        const nueva = [u, ...prev.filter((x) => x.brigadistaId !== u.brigadistaId)].slice(0, 25);
+        guardarCache('ubicaciones', JSON.stringify(nueva));
+        return nueva;
+      });
     });
     return () => {
       socket.disconnect();
