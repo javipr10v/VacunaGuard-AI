@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { PlanificarRutaDto } from '../../application/dto/planificar-ruta.dto';
 import { RegistrarPuntoDto } from '../../application/dto/registrar-punto.dto';
 import { RegistrarUbicacionDto } from '../../application/dto/registrar-ubicacion.dto';
 import { ConsultarRutaUseCase } from '../../application/use-cases/consultar-ruta.use-case';
+import { EliminarPuntoUseCase } from '../../application/use-cases/eliminar-punto.use-case';
 import { ListarPuntosUseCase } from '../../application/use-cases/listar-puntos.use-case';
 import { ListarRutasUseCase } from '../../application/use-cases/listar-rutas.use-case';
 import { ListarUbicacionesUseCase } from '../../application/use-cases/listar-ubicaciones.use-case';
@@ -25,6 +26,7 @@ export class RutasController {
     private readonly consultarRuta: ConsultarRutaUseCase,
     private readonly registrarUbicacion: RegistrarUbicacionUseCase,
     private readonly listarUbicaciones: ListarUbicacionesUseCase,
+    private readonly eliminarPunto: EliminarPuntoUseCase,
   ) {}
 
   @Get('puntos')
@@ -37,6 +39,12 @@ export class RutasController {
   @Roles('ADMINISTRADOR', 'COORDINADOR')
   punto(@Body() dto: RegistrarPuntoDto) {
     return this.registrarPunto.ejecutar(dto);
+  }
+
+  @Delete('puntos/:id')
+  @Roles('ADMINISTRADOR', 'COORDINADOR')
+  eliminar(@Param('id') id: string) {
+    return this.eliminarPunto.ejecutar(id);
   }
 
   @Get('rutas')

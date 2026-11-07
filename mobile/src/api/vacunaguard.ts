@@ -5,6 +5,7 @@ export interface UsuarioResumen {
   nombre: string;
   email: string;
   rol: 'ADMINISTRADOR' | 'COORDINADOR' | 'BRIGADISTA';
+  activo: boolean;
   brigadaId: string | null;
 }
 
@@ -129,3 +130,14 @@ export const enviarUbicacion = (latitud: number, longitud: number) =>
 
 export const ubicacionesRecientes = (minutos = 5) =>
   peticion<UbicacionResumen[]>('routes', '/ubicaciones?minutos=' + minutos);
+
+export const listarUsuarios = () => peticion<UsuarioResumen[]>('identity', '/auth/usuarios');
+
+export const actualizarUsuario = (id: string, dto: { activo?: boolean; brigadaId?: string | null }) =>
+  peticion<UsuarioResumen>('identity', '/auth/usuarios/' + id, { metodo: 'PATCH', cuerpo: dto });
+
+export const eliminarLote = (id: string) =>
+  peticion<{ eliminado: boolean }>('coldChain', '/lotes/' + id, { metodo: 'DELETE' });
+
+export const eliminarPunto = (id: string) =>
+  peticion<{ eliminado: boolean }>('routes', '/puntos/' + id, { metodo: 'DELETE' });

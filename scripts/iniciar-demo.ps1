@@ -27,10 +27,8 @@ Write-Host '  [OK] puente'
 
 $token = (Get-Content (Join-Path $env:USERPROFILE '.expo-token') -ErrorAction SilentlyContinue | Select-Object -First 1)
 $metroDir = Join-Path $raiz 'vacunaguard-app'
-$cmdFile = Join-Path $logs 'start-metro.cmd'
-$contenido = '@echo off' + [Environment]::NewLine + 'set "EXPO_TOKEN=' + $token.Trim() + '"' + [Environment]::NewLine + 'cd /d "' + $metroDir + '"' + [Environment]::NewLine + 'npx expo start'
-Set-Content -Path $cmdFile -Value $contenido -Encoding ASCII
-Start-Process $cmdFile -WindowStyle Hidden
+$cmdMetro = '$env:EXPO_TOKEN="' + $token.Trim() + '"; Set-Location "' + $metroDir + '"; npx expo start'
+Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $cmdMetro -WindowStyle Hidden
 Write-Host '  [OK] Metro (modo desarrollo, con sesion de Expo)'
 
 

@@ -13,6 +13,7 @@ import type { TokenServicePort } from './application/ports/out/token-service.por
 import { USUARIO_REPOSITORY } from './application/ports/out/usuario.repository.port';
 import type { UsuarioRepositoryPort } from './application/ports/out/usuario.repository.port';
 import { IniciarSesionUseCase } from './application/use-cases/iniciar-sesion.use-case';
+import { ActualizarUsuarioUseCase, ListarUsuariosUseCase } from './application/use-cases/gestion-usuarios.use-case';
 import { RegistrarUsuarioUseCase } from './application/use-cases/registrar-usuario.use-case';
 import { AuthController } from './infrastructure/http/auth.controller';
 import { AdminSeeder } from './infrastructure/bootstrap/admin-seeder';
@@ -62,6 +63,16 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
       useFactory: (r: UsuarioRepositoryPort, h: PasswordHasherPort, i: IdGeneratorPort) =>
         new RegistrarUsuarioUseCase(r, h, i),
       inject: [USUARIO_REPOSITORY, PASSWORD_HASHER, ID_GENERATOR],
+    },
+    {
+      provide: ListarUsuariosUseCase,
+      useFactory: (r: UsuarioRepositoryPort) => new ListarUsuariosUseCase(r),
+      inject: [USUARIO_REPOSITORY],
+    },
+    {
+      provide: ActualizarUsuarioUseCase,
+      useFactory: (r: UsuarioRepositoryPort) => new ActualizarUsuarioUseCase(r),
+      inject: [USUARIO_REPOSITORY],
     },
     {
       provide: IniciarSesionUseCase,

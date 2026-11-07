@@ -7,4 +7,5 @@ export interface UsuarioRepositoryPort {
   guardar(usuario: Usuario): Promise<void>;
   buscarPorEmail(email: Email): Promise<Usuario | null>;
   buscarPorId(id: string): Promise<Usuario | null>;
+  listar(): Promise<Usuario[]>;
 }

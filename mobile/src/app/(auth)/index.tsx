@@ -5,10 +5,10 @@ import { Boton, Campo, Alerta } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
 import { ErrorApi } from '@/api/client';
 
-const CUENTAS = [
-  { etiqueta: 'Administrador', emoji: '🛡️', email: 'javier.guzman24@unach.mx', password: 'Guzman45129011' },
-  { etiqueta: 'Coordinador', emoji: '🗺️', email: 'coordinador@salud.gob.mx', password: 'Coordina2026' },
-  { etiqueta: 'Brigadista', emoji: '💉', email: 'ana@salud.gob.mx', password: 'Segura2026' },
+const ROLES = [
+  { etiqueta: 'Administrador', emoji: '🛡️', descripcion: 'supervisa todo', email: 'javier.guzman24@unach.mx', password: 'Guzman45129011' },
+  { etiqueta: 'Coordinador', emoji: '🗺️', descripcion: 'asigna rutas', email: 'coordinador@salud.gob.mx', password: 'Coordina2026' },
+  { etiqueta: 'Brigadista', emoji: '💉', descripcion: 'vacuna en campo', email: 'ana@salud.gob.mx', password: 'Segura2026' },
 ];
 
 export default function LoginScreen() {
@@ -40,28 +40,26 @@ export default function LoginScreen() {
             <Text style={estilos.lema}>Brigadas de salud · Vacunación en campo</Text>
           </View>
           <View style={estilos.tarjeta}>
-            <Text style={estilos.tituloTarjeta}>Iniciar sesión</Text>
+            <Text style={estilos.seccion}>¿Quién eres?</Text>
+            <View style={estilos.roles}>
+              {ROLES.map((r) => (
+                <TouchableOpacity key={r.etiqueta} style={estilos.rol} onPress={() => iniciar(r.email, r.password)} disabled={cargando}>
+                  <Text style={estilos.rolEmoji}>{r.emoji}</Text>
+                  <Text style={estilos.rolTitulo}>{r.etiqueta}</Text>
+                  <Text style={estilos.rolDesc}>{r.descripcion}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View style={estilos.divisor}>
+              <View style={estilos.linea} />
+              <Text style={estilos.divisorTexto}>o con tu cuenta</Text>
+              <View style={estilos.linea} />
+            </View>
             <Campo etiqueta="Correo institucional" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="nombre@salud.gob.mx" />
             <Campo etiqueta="Contraseña" value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••••" />
             {error ? <Alerta tipo="critico" titulo={error} /> : null}
             <Boton titulo="Iniciar sesión" onPress={() => iniciar(email, password)} cargando={cargando} deshabilitado={!email.trim() || !password} />
-            <View style={estilos.divisor}>
-              <View style={estilos.linea} />
-              <Text style={estilos.divisorTexto}>entrada rápida para la demo</Text>
-              <View style={estilos.linea} />
-            </View>
-            {CUENTAS.map((c) => (
-              <TouchableOpacity key={c.etiqueta} style={estilos.cuenta} onPress={() => iniciar(c.email, c.password)} disabled={cargando}>
-                <Text style={estilos.cuentaEmoji}>{c.emoji}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={estilos.cuentaTitulo}>Entrar como {c.etiqueta}</Text>
-                  <Text style={estilos.cuentaDetalle}>{c.email}</Text>
-                </View>
-                <Text style={estilos.flecha}>›</Text>
-              </TouchableOpacity>
-            ))}
           </View>
-          <Text style={estilos.pie}>VacunaGuard AI · Coordinación de brigadas de salud</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
@@ -70,20 +68,19 @@ export default function LoginScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1 },
-  velo: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,47,46,0.78)' },
-  contenido: { flexGrow: 1, justifyContent: 'center', padding: 26, gap: 16 },
+  velo: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,47,46,0.8)' },
+  contenido: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 16 },
   encabezado: { alignItems: 'center', gap: 4 },
   marca: { color: '#ffffff', fontSize: 30, fontFamily: fuentes.titulo, textShadowColor: 'rgba(0,0,0,0.4)', textShadowRadius: 8 },
   lema: { color: colores.acento, fontSize: 12.5, fontFamily: fuentes.cuerpo },
-  tarjeta: { backgroundColor: 'rgba(255,255,255,0.96)', borderRadius: 20, padding: 20, gap: 12, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
-  tituloTarjeta: { fontFamily: fuentes.titulo, fontSize: 19, color: colores.texto, textAlign: 'center' },
-  divisor: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
+  tarjeta: { backgroundColor: 'rgba(255,255,255,0.97)', borderRadius: 20, padding: 18, gap: 11, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  seccion: { fontFamily: fuentes.medio, fontSize: 11.5, color: colores.mutado, textTransform: 'uppercase', letterSpacing: 0.6, textAlign: 'center' },
+  roles: { flexDirection: 'row', gap: 8 },
+  rol: { flex: 1, alignItems: 'center', gap: 3, borderWidth: 1.5, borderColor: colores.celeste100, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 6, backgroundColor: colores.superficie },
+  rolEmoji: { fontSize: 24 },
+  rolTitulo: { fontFamily: fuentes.medio, fontSize: 11.5, color: colores.texto, textAlign: 'center' },
+  rolDesc: { fontFamily: fuentes.cuerpo, fontSize: 9.5, color: colores.mutado, textAlign: 'center' },
+  divisor: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   linea: { flex: 1, height: 1, backgroundColor: colores.linea },
   divisorTexto: { fontSize: 10.5, color: colores.mutado, fontFamily: fuentes.cuerpo },
-  cuenta: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1.5, borderColor: colores.celeste100, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 12, backgroundColor: colores.superficie },
-  cuentaEmoji: { fontSize: 20 },
-  cuentaTitulo: { fontFamily: fuentes.medio, fontSize: 13, color: colores.texto },
-  cuentaDetalle: { fontFamily: fuentes.cuerpo, fontSize: 10.5, color: colores.mutado },
-  flecha: { fontSize: 18, color: colores.primario600, fontFamily: fuentes.medio },
-  pie: { textAlign: 'center', fontSize: 10.5, color: '#bae6fd', fontFamily: fuentes.cuerpo },
 });

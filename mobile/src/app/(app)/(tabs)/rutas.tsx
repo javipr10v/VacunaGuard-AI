@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { Alerta, Boton, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { MapaOffline } from '@/components/MapaOffline';
 import { colores, fuentes } from '@/theme';
-import { listarPuntos, listarRutas, planificarRuta, type RutaResumen } from '@/api/vacunaguard';
+import { eliminarPunto, listarPuntos, listarRutas, planificarRuta, type RutaResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { guardarPuntos, guardarRuta, leerPuntos, leerRuta, type PuntoLocal, type RutaLocal } from '@/storage/cola';
 import { useSync } from '@/context/SyncContext';
@@ -67,6 +67,24 @@ export default function RutasScreen() {
     }, [enLinea, esBrigadista]),
   );
 
+  const borrarPunto = (id: string, nombre: string) => {
+    Alert.alert('Eliminar punto', '¿Eliminar ' + nombre + '?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: () => {
+          eliminarPunto(id)
+            .then(() => {
+              setPuntos((prev) => prev.filter((p) => p.id !== id));
+              setMensaje('Punto eliminado');
+            })
+            .catch((e: unknown) => setMensaje(e instanceof ErrorApi ? e.message : 'No se pudo eliminar'));
+        },
+      },
+    ]);
+  };
+
   const planificar = async () => {
     if (puntos.length === 0) return;
     try {
@@ -118,6 +136,19 @@ export default function RutasScreen() {
             <MapaOffline puntos={puntos} ruta={ruta} />
           </>
         )}
+        {!esBrigadista && enLinea && puntos.length > 0 ? (
+          <Tarjeta>
+            <Text style={estilos.resumen}>Puntos de visita ({puntos.length})</Text>
+            {puntos.map((p) => (
+              <View key={p.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 }}>
+                <Text style={estilos.parada}>{p.nombre} · {p.personas} pers.</Text>
+                <TouchableOpacity onPress={() => borrarPunto(p.id, p.nombre)}>
+                  <Text style={{ fontSize: 15 }}>🗑️</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </Tarjeta>
+        ) : null}
         {ruta ? (
           <Tarjeta>
             <Text style={estilos.resumen}>Distancia total: {ruta.distanciaKm} km · {ruta.personas} personas estimadas</Text>

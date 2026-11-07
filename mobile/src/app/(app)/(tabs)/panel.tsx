@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -46,13 +46,15 @@ export default function PanelScreen() {
     ],
     COORDINADOR: [
       { icono: 'map-outline', etiqueta: 'Asignar ruta', ruta: '/rutas' },
+      { icono: 'people-outline', etiqueta: 'Brigadistas', ruta: '/usuarios' },
       { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },
       { icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' },
       { icono: 'chatbubbles-outline', etiqueta: 'Protocolos IA', ruta: '/protocolos' },
       { icono: 'navigate-outline', etiqueta: 'Ubicaciones', ruta: '/gps' },
     ],
     ADMINISTRADOR: [
-      { icono: 'people-outline', etiqueta: 'Nuevo brigadista', ruta: '/nuevo-usuario' },
+      { icono: 'people-outline', etiqueta: 'Brigadistas', ruta: '/usuarios' },
+      { icono: 'person-add-outline', etiqueta: 'Nuevo brigadista', ruta: '/nuevo-usuario' },
       { icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' },
       { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },
       { icono: 'chatbubbles-outline', etiqueta: 'Protocolos IA', ruta: '/protocolos' },
@@ -66,16 +68,20 @@ export default function PanelScreen() {
   return (
     <SafeAreaView edges={['top']} style={estilos.fondo}>
       <ScrollView contentContainerStyle={estilos.contenido}>
-        <View style={estilos.encabezado}>
-          <Avatar iniciales={iniciales} />
-          <View style={{ flex: 1 }}>
-            <Text style={estilos.saludo}>Hola, {(usuario?.nombre ?? 'brigadista').split(' ')[0]} 👋</Text>
-            <Text style={estilos.sub}>{usuario?.email}</Text>
+        <ImageBackground source={require('../../../../assets/login-bg.jpg')} style={estilos.hero} resizeMode="cover">
+          <View style={estilos.heroVelo}>
+            <View style={estilos.encabezado}>
+              <Avatar iniciales={iniciales} />
+              <View style={{ flex: 1 }}>
+                <Text style={estilos.saludo}>Hola, {(usuario?.nombre ?? 'brigadista').split(' ')[0]} 👋</Text>
+                <Text style={estilos.sub}>{usuario?.email}</Text>
+              </View>
+              <View style={estilos.rolChip}>
+                <Text style={estilos.rolTexto}>{rol}</Text>
+              </View>
+            </View>
           </View>
-          <View style={estilos.rolChip}>
-            <Text style={estilos.rolTexto}>{rol}</Text>
-          </View>
-        </View>
+        </ImageBackground>
 
         <View style={estilos.estadisticas}>
           <View style={estilos.stat}><Text style={estilos.statNum}>{lotes.length}</Text><Text style={estilos.statEtiqueta}>Lotes</Text></View>
@@ -125,13 +131,15 @@ export default function PanelScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
-  contenido: { padding: 18, gap: 12 },
+  contenido: { paddingBottom: 24, gap: 12 },
+  hero: { marginHorizontal: -18, marginTop: -18, borderBottomLeftRadius: 22, borderBottomRightRadius: 22, overflow: 'hidden' },
+  heroVelo: { backgroundColor: 'rgba(4,47,46,0.72)', padding: 18, paddingTop: 22 },
   encabezado: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  saludo: { fontFamily: fuentes.titulo, fontSize: 20, color: colores.texto },
-  sub: { fontFamily: fuentes.cuerpo, fontSize: 11, color: colores.mutado },
-  rolChip: { backgroundColor: colores.celeste100, borderRadius: 999, paddingVertical: 4, paddingHorizontal: 10 },
-  rolTexto: { fontFamily: fuentes.medio, fontSize: 10, color: colores.primario700 },
-  estadisticas: { flexDirection: 'row', gap: 10 },
+  saludo: { fontFamily: fuentes.titulo, fontSize: 20, color: '#ffffff' },
+  sub: { fontFamily: fuentes.cuerpo, fontSize: 11, color: colores.acento },
+  rolChip: { backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)', borderRadius: 999, paddingVertical: 4, paddingHorizontal: 10 },
+  rolTexto: { fontFamily: fuentes.medio, fontSize: 10, color: '#ffffff' },
+  estadisticas: { flexDirection: 'row', gap: 10, paddingHorizontal: 18, marginTop: -14 },
   stat: { flex: 1, backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 14, paddingVertical: 12, alignItems: 'center' },
   statNum: { fontFamily: fuentes.titulo, fontSize: 20, color: colores.primario700 },
   statEtiqueta: { fontFamily: fuentes.cuerpo, fontSize: 10.5, color: colores.mutado },

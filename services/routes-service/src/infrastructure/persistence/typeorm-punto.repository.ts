@@ -49,6 +49,11 @@ export class TypeOrmPuntoRepository implements PuntoVisitaRepositoryPort {
     return filas.map((f) => this.aDominio(f));
   }
 
+  async eliminar(id: string): Promise<number> {
+    const r: { rowCount?: number } = await this.ds.query('DELETE FROM puntos_visita WHERE id = $1', [id]);
+    return Number(r?.rowCount ?? 0);
+  }
+
   private aDominio(f: FilaPunto): PuntoVisita {
     return new PuntoVisita(
       f.id,

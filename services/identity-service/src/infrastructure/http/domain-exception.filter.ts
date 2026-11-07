@@ -3,6 +3,7 @@ import { DomainException } from '../../domain/exceptions/domain.exception';
 import {
   CredencialesInvalidasException,
   EmailDuplicadoException,
+  UsuarioNoEncontradoException,
 } from '../../domain/exceptions/usuario.exceptions';
 
 @Catch(DomainException)
@@ -14,6 +15,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
     let status = 400;
     if (ex instanceof EmailDuplicadoException) status = 409;
     else if (ex instanceof CredencialesInvalidasException) status = 401;
+    else if (ex instanceof UsuarioNoEncontradoException) status = 404;
     res.status(status).json({ statusCode: status, error: ex.name, message: ex.message });
   }
 }

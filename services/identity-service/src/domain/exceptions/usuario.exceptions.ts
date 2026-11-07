@@ -7,6 +7,13 @@ export class EmailDuplicadoException extends DomainException {
   }
 }
 
+export class UsuarioNoEncontradoException extends DomainException {
+  constructor() {
+    super('Usuario no encontrado');
+    this.name = 'UsuarioNoEncontradoException';
+  }
+}
+
 export class CredencialesInvalidasException extends DomainException {
   constructor() {
     super('Credenciales inválidas');

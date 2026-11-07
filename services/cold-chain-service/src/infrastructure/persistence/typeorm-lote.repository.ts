@@ -38,6 +38,11 @@ export class TypeOrmLoteRepository implements LoteRepositoryPort {
     return filas.map((f) => this.aDominio(f));
   }
 
+  async eliminar(id: string): Promise<number> {
+    const r = await this.repo.delete({ id });
+    return Number(r.affected ?? 0);
+  }
+
   private aDominio(f: LoteOrmEntity): Lote {
     return new Lote(
       f.id,

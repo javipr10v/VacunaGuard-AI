@@ -65,6 +65,10 @@ export class Usuario {
     this._brigadaId = brigadaId;
   }
 
+  quitarBrigada(): void {
+    this._brigadaId = null;
+  }
+
   tienePermiso(rolesPermitidos: Rol[]): boolean {
     return rolesPermitidos.includes(this._rol);
   }

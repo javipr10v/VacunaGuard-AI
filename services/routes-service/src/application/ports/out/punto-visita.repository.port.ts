@@ -6,4 +6,5 @@ export interface PuntoVisitaRepositoryPort {
   guardar(punto: PuntoVisita): Promise<void>;
   buscarPorIds(ids: string[]): Promise<PuntoVisita[]>;
   listar(): Promise<PuntoVisita[]>;
+  eliminar(id: string): Promise<number>;
 }

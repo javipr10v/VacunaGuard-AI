@@ -7,4 +7,5 @@ export interface LoteRepositoryPort {
   buscarPorId(id: string): Promise<Lote | null>;
   buscarPorVacunaYLote(vacuna: string, numeroLote: string): Promise<Lote | null>;
   listar(): Promise<Lote[]>;
+  eliminar(id: string): Promise<number>;
 }

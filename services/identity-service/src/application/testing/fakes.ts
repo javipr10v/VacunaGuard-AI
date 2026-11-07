@@ -16,6 +16,9 @@ export class RepoMemoria implements UsuarioRepositoryPort {
   async buscarPorId(id: string) {
     return this.items.get(id) ?? null;
   }
+  async listar() {
+    return [...this.items.values()];
+  }
 }
 
 export class HasherFalso implements PasswordHasherPort {

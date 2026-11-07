@@ -36,6 +36,11 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
     return fila ? this.aDominio(fila) : null;
   }
 
+  async listar(): Promise<Usuario[]> {
+    const filas = await this.repo.find({ order: { nombre: 'ASC' } });
+    return filas.map((f) => this.aDominio(f));
+  }
+
   private aDominio(f: UsuarioOrmEntity): Usuario {
     return new Usuario(
       f.id,

@@ -1,7 +1,9 @@
-import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { IniciarSesionDto } from '../../application/dto/iniciar-sesion.dto';
 import { RegistrarUsuarioDto } from '../../application/dto/registrar-usuario.dto';
+import { ActualizarUsuarioDto } from '../../application/dto/actualizar-usuario.dto';
+import { ActualizarUsuarioUseCase, ListarUsuariosUseCase } from '../../application/use-cases/gestion-usuarios.use-case';
 import { IniciarSesionUseCase } from '../../application/use-cases/iniciar-sesion.use-case';
 import { RegistrarUsuarioUseCase } from '../../application/use-cases/registrar-usuario.use-case';
 import { Rol } from '../../domain/value-objects/rol.vo';
@@ -14,6 +16,8 @@ export class AuthController {
   constructor(
     private readonly iniciarSesion: IniciarSesionUseCase,
     private readonly registrarUsuario: RegistrarUsuarioUseCase,
+    private readonly listarUsuarios: ListarUsuariosUseCase,
+    private readonly actualizarUsuario: ActualizarUsuarioUseCase,
   ) {}
 
   @Post('login')
@@ -34,5 +38,19 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   perfil(@Req() req: { usuario: unknown }) {
     return req.usuario;
+  }
+
+  @Get('usuarios')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  usuarios() {
+    return this.listarUsuarios.ejecutar();
+  }
+
+  @Patch('usuarios/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  usuario(@Param('id') id: string, @Body() dto: ActualizarUsuarioDto) {
+    return this.actualizarUsuario.ejecutar(id, dto);
   }
 }

@@ -17,6 +17,7 @@ import type { RutaRepositoryPort } from './application/ports/out/ruta.repository
 import { UBICACION_REPOSITORY } from './application/ports/out/ubicacion.repository.port';
 import type { UbicacionRepositoryPort } from './application/ports/out/ubicacion.repository.port';
 import { ConsultarRutaUseCase } from './application/use-cases/consultar-ruta.use-case';
+import { EliminarPuntoUseCase } from './application/use-cases/eliminar-punto.use-case';
 import { ListarPuntosUseCase } from './application/use-cases/listar-puntos.use-case';
 import { ListarRutasUseCase } from './application/use-cases/listar-rutas.use-case';
 import { ListarUbicacionesUseCase } from './application/use-cases/listar-ubicaciones.use-case';
@@ -83,6 +84,11 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
       provide: RegistrarAlertaStockUseCase,
       useFactory: (a: AlertaStockRepositoryPort) => new RegistrarAlertaStockUseCase(a),
       inject: [ALERTA_REPOSITORY],
+    },
+    {
+      provide: EliminarPuntoUseCase,
+      useFactory: (p: PuntoVisitaRepositoryPort) => new EliminarPuntoUseCase(p),
+      inject: [PUNTO_REPOSITORY],
     },
     {
       provide: ListarPuntosUseCase,

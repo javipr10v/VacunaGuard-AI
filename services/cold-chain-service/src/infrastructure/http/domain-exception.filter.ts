@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { DomainException } from '../../domain/exceptions/domain.exception';
-import { LoteDuplicadoException } from '../../domain/exceptions/lote.exceptions';
+import { LoteDuplicadoException, LoteNoEncontradoException } from '../../domain/exceptions/lote.exceptions';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
@@ -8,7 +8,9 @@ export class DomainExceptionFilter implements ExceptionFilter {
     const res = host
       .switchToHttp()
       .getResponse<{ status(c: number): { json(b: unknown): void } }>();
-    const status = ex instanceof LoteDuplicadoException ? 409 : 400;
+    let status = 400;
+    if (ex instanceof LoteDuplicadoException) status = 409;
+    else if (ex instanceof LoteNoEncontradoException) status = 404;
     res.status(status).json({ statusCode: status, error: ex.name, message: ex.message });
   }
 }
