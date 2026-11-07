@@ -6,3 +6,10 @@ export class PuntoNoEncontradoException extends DomainException {
     this.name = 'PuntoNoEncontradoException';
   }
 }
+
+export class RutaNoEncontradaException extends DomainException {
+  constructor() {
+    super('Ruta no encontrada');
+    this.name = 'RutaNoEncontradaException';
+  }
+}

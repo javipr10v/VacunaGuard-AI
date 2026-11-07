@@ -1,8 +1,11 @@
 import type { PuntoVisita } from '../../domain/entities/punto-visita.entity';
 import type { Ruta } from '../../domain/entities/ruta.entity';
+import type { UbicacionBrigadista } from '../../domain/entities/ubicacion.entity';
+import type { IdGeneratorPort } from '../ports/out/id-generator.port';
+import type { NotificadorUbicacionesPort, UbicacionResumen } from '../ports/out/notificador-ubicaciones.port';
 import type { PuntoVisitaRepositoryPort } from '../ports/out/punto-visita.repository.port';
 import type { RutaRepositoryPort } from '../ports/out/ruta.repository.port';
-import type { IdGeneratorPort } from '../ports/out/id-generator.port';
+import type { UbicacionRepositoryPort } from '../ports/out/ubicacion.repository.port';
 
 export class PuntosMemoria implements PuntoVisitaRepositoryPort {
   items = new Map<string, PuntoVisita>();
@@ -27,6 +30,27 @@ export class RutasMemoria implements RutaRepositoryPort {
   }
   async listarPorBrigada(brigadaId: string) {
     return [...this.items.values()].filter((r) => r.brigadaId === brigadaId);
+  }
+  async listarTodas() {
+    return [...this.items.values()];
+  }
+}
+
+export class UbicacionesMemoria implements UbicacionRepositoryPort {
+  items: UbicacionBrigadista[] = [];
+  async guardar(u: UbicacionBrigadista) {
+    this.items.push(u);
+  }
+  async recientes(minutos: number) {
+    const limite = Date.now() - minutos * 60_000;
+    return this.items.filter((u) => u.fecha.getTime() >= limite);
+  }
+}
+
+export class NotificadorFalso implements NotificadorUbicacionesPort {
+  resumenes: UbicacionResumen[] = [];
+  ubicacionActualizada(resumen: UbicacionResumen) {
+    this.resumenes.push(resumen);
   }
 }
 

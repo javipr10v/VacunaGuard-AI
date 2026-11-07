@@ -93,4 +93,16 @@ export class TypeOrmRutaRepository implements RutaRepositoryPort {
     }
     return rutas;
   }
+
+  async listarTodas(): Promise<Ruta[]> {
+    const filas: { id: string }[] = await this.ds.query(
+      'SELECT id FROM rutas ORDER BY creado_en DESC',
+    );
+    const rutas: Ruta[] = [];
+    for (const f of filas) {
+      const ruta = await this.buscarPorId(f.id);
+      if (ruta) rutas.push(ruta);
+    }
+    return rutas;
+  }
 }

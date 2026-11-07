@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { DomainException } from '../../domain/exceptions/domain.exception';
-import { PuntoNoEncontradoException } from '../../domain/exceptions/ruta.exceptions';
+import { PuntoNoEncontradoException, RutaNoEncontradaException } from '../../domain/exceptions/ruta.exceptions';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
@@ -8,7 +8,9 @@ export class DomainExceptionFilter implements ExceptionFilter {
     const res = host
       .switchToHttp()
       .getResponse<{ status(c: number): { json(b: unknown): void } }>();
-    const status = ex instanceof PuntoNoEncontradoException ? 404 : 400;
+    let status = 400;
+    if (ex instanceof PuntoNoEncontradoException) status = 404;
+    else if (ex instanceof RutaNoEncontradaException) status = 404;
     res.status(status).json({ statusCode: status, error: ex.name, message: ex.message });
   }
 }

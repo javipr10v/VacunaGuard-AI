@@ -11,6 +11,7 @@ import type { IdGeneratorPort } from './application/ports/out/id-generator.port'
 import { LOTE_REPOSITORY } from './application/ports/out/lote.repository.port';
 import type { LoteRepositoryPort } from './application/ports/out/lote.repository.port';
 import { DescontarStockUseCase } from './application/use-cases/descontar-stock.use-case';
+import { ListarLotesUseCase } from './application/use-cases/listar-lotes.use-case';
 import { RegistrarLecturaTemperaturaUseCase } from './application/use-cases/registrar-lectura-temperatura.use-case';
 import { RegistrarLoteUseCase } from './application/use-cases/registrar-lote.use-case';
 import { LecturasController } from './infrastructure/http/lecturas.controller';
@@ -52,6 +53,11 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
     { provide: EVENT_PUBLISHER, useClass: RabbitMqEventPublisherAdapter },
     { provide: LOTE_REPOSITORY, useClass: TypeOrmLoteRepository },
     { provide: ID_GENERATOR, useClass: UuidGenerator },
+    {
+      provide: ListarLotesUseCase,
+      useFactory: (l: LoteRepositoryPort) => new ListarLotesUseCase(l),
+      inject: [LOTE_REPOSITORY],
+    },
     {
       provide: RegistrarLecturaTemperaturaUseCase,
       useFactory: (publisher: EventPublisherPort) =>

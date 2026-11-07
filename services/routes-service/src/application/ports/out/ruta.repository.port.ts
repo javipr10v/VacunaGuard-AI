@@ -6,4 +6,5 @@ export interface RutaRepositoryPort {
   guardar(ruta: Ruta): Promise<void>;
   buscarPorId(id: string): Promise<Ruta | null>;
   listarPorBrigada(brigadaId: string): Promise<Ruta[]>;
+  listarTodas(): Promise<Ruta[]>;
 }

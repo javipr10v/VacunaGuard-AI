@@ -1,6 +1,11 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { DomainException } from '../../domain/exceptions/domain.exception';
 import { RegistrarCiudadanoDto } from '../../application/dto/registrar-ciudadano.dto';
 import { RegistrarVacunacionDto } from '../../application/dto/registrar-vacunacion.dto';
+import { ConsultarCiudadanosQueryDto } from '../../application/dto/consultar-ciudadanos.query.dto';
+import { BuscarCiudadanoPorCurpUseCase } from '../../application/use-cases/buscar-ciudadano.use-case';
+import { ConsultarCiudadanoUseCase } from '../../application/use-cases/consultar-ciudadano.use-case';
+import { ListarVacunacionesUseCase } from '../../application/use-cases/listar-vacunaciones.use-case';
 import { RegistrarCiudadanoUseCase } from '../../application/use-cases/registrar-ciudadano.use-case';
 import { RegistrarVacunacionUseCase } from '../../application/use-cases/registrar-vacunacion.use-case';
 import { JwtAuthGuard } from '../security/jwt-auth.guard';
@@ -15,10 +20,30 @@ export class RegistroController {
   constructor(
     private readonly registrarCiudadano: RegistrarCiudadanoUseCase,
     private readonly registrarVacunacion: RegistrarVacunacionUseCase,
+    private readonly consultarCiudadano: ConsultarCiudadanoUseCase,
+    private readonly buscarCiudadano: BuscarCiudadanoPorCurpUseCase,
+    private readonly listarVacunaciones: ListarVacunacionesUseCase,
   ) {}
 
+  @Get('ciudadanos')
+  async ciudadanos(@Query() q: ConsultarCiudadanosQueryDto) {
+    if (!q.curp) throw new DomainException('Indica la CURP para buscar un ciudadano');
+    const r = await this.buscarCiudadano.ejecutar(q.curp);
+    return r ?? { encontrado: false };
+  }
+
+  @Get('ciudadanos/:id')
+  ciudadano(@Param('id') id: string) {
+    return this.consultarCiudadano.ejecutar(id);
+  }
+
+  @Get('ciudadanos/:id/vacunaciones')
+  vacunaciones(@Param('id') id: string) {
+    return this.listarVacunaciones.ejecutar(id);
+  }
+
   @Post('ciudadanos')
-  ciudadano(@Body() dto: RegistrarCiudadanoDto) {
+  ciudadanoAlta(@Body() dto: RegistrarCiudadanoDto) {
     return this.registrarCiudadano.ejecutar(dto);
   }
 
