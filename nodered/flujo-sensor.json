@@ -4,20 +4,16 @@
     "type": "tab",
     "label": "VacunaGuard - Sensores",
     "disabled": false,
-    "info": "Simulador IoT: 5 hieleras (H-01 a H-05), cada una con 2 sensores (A/B). Boton FORZAR envia alerta critica en las 5 a la vez."
+    "info": "Simulador IoT realista: 5 hieleras (H-01 a H-05) x 2 sensores (A/B). Las temperaturas derivan de forma gradual (como sensores reales) y solo se salen del rango 2-8 C por unos minutos antes de recuperarse."
   },
   {
     "id": "inj-auto",
     "type": "inject",
     "z": "tab1",
-    "name": "Simular lecturas cada 20s",
+    "name": "Simular lecturas cada 20s (realista)",
     "props": [
       {
         "p": "payload"
-      },
-      {
-        "p": "topic",
-        "vt": "str"
       }
     ],
     "repeat": "20",
@@ -29,7 +25,7 @@
     "payloadType": "date",
     "disabled": true,
     "x": 130,
-    "y": 120,
+    "y": 100,
     "wires": [
       [
         "fn-auto"
@@ -37,10 +33,10 @@
     ]
   },
   {
-    "id": "inj-force",
+    "id": "inj-alea",
     "type": "inject",
     "z": "tab1",
-    "name": "FORZAR alerta en las 5 hieleras",
+    "name": "FORZAR: alerta aleatoria (2-3 hieleras)",
     "props": [
       {
         "p": "payload"
@@ -54,10 +50,35 @@
     "payload": "forzar",
     "payloadType": "str",
     "x": 130,
-    "y": 220,
+    "y": 200,
     "wires": [
       [
-        "fn-force"
+        "fn-alea"
+      ]
+    ]
+  },
+  {
+    "id": "inj-todas",
+    "type": "inject",
+    "z": "tab1",
+    "name": "FORZAR: las 5 hieleras",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "forzar",
+    "payloadType": "str",
+    "x": 130,
+    "y": 300,
+    "wires": [
+      [
+        "fn-todas"
       ]
     ]
   },
@@ -65,15 +86,15 @@
     "id": "fn-auto",
     "type": "function",
     "z": "tab1",
-    "name": "5 hieleras x 2 sensores",
-    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst sensores = ['A','B'];\nconst msgs = [];\nfor (const h of hieleras) {\n  for (const s of sensores) {\n    const r = Math.random();\n    let temp;\n    if (r < 0.85) temp = 2 + Math.random() * 6;\n    else if (r < 0.93) temp = 8.6 + Math.random() * 3;\n    else temp = 0.5 + Math.random() * 1.5;\n    msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + s, hielera: h, temperatura: Math.round(temp * 10) / 10 } });\n  }\n}\nreturn [msgs];",
+    "name": "Deriva realista (5 hieleras)",
+    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst sensores = ['A','B'];\nlet estado = context.get('estado') || {};\nconst enFalla = hieleras.filter((h) => estado[h + ':estado'] && estado[h + ':estado'].startsWith('falla')).length;\nconst msgs = [];\nfor (const h of hieleras) {\n  if (estado[h] === undefined) {\n    estado[h] = 3.5 + Math.random() * 3.5;\n    estado[h + ':estado'] = 'normal';\n  }\n  let t = estado[h];\n  const s = estado[h + ':estado'];\n  if (s === 'falla-sube') {\n    t += 0.4 + Math.random() * 0.5;\n    if (t >= 9.3) estado[h + ':estado'] = 'recupera';\n  } else if (s === 'falla-baja') {\n    t -= 0.35 + Math.random() * 0.45;\n    if (t <= 1.4) estado[h + ':estado'] = 'recupera';\n  } else if (s === 'recupera') {\n    const paso = 0.5 + Math.random() * 0.4;\n    t += (5 - t > 0 ? 1 : -1) * paso;\n    if (t >= 2.5 && t <= 7.5) estado[h + ':estado'] = 'normal';\n  } else {\n    t += (Math.random() - 0.5) * 0.5;\n    if (enFalla < 2 && Math.random() < 0.05) {\n      estado[h + ':estado'] = Math.random() < 0.5 ? 'falla-sube' : 'falla-baja';\n    }\n  }\n  t = Math.min(9.3, Math.max(1.4, t));\n  estado[h] = t;\n  for (const sn of sensores) {\n    const lectura = sn === 'A' ? t : t + (Math.random() - 0.5) * 0.3;\n    msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + sn, hielera: h, temperatura: Math.round(lectura * 100) / 100 } });\n  }\n}\ncontext.set('estado', estado);\nreturn [msgs];",
     "outputs": 1,
     "noerr": 0,
     "initialize": "",
     "finalize": "",
     "libs": [],
-    "x": 360,
-    "y": 120,
+    "x": 400,
+    "y": 100,
     "wires": [
       [
         "http-lecturas"
@@ -81,18 +102,37 @@
     ]
   },
   {
-    "id": "fn-force",
+    "id": "fn-alea",
     "type": "function",
     "z": "tab1",
-    "name": "Todas criticas",
-    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst sensores = ['A','B'];\nconst msgs = [];\nfor (const h of hieleras) {\n  for (const s of sensores) {\n    const temp = s === 'A' ? 11.2 : 1.1;\n    msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + s, hielera: h, temperatura: temp } });\n  }\n}\nreturn [msgs];",
+    "name": "Aleatoria: 2-3 hieleras criticas",
+    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst sensores = ['A','B'];\nconst cuantas = 2 + Math.floor(Math.random() * 2);\nconst elegidas = hieleras.slice().sort(() => Math.random() - 0.5).slice(0, cuantas);\nconst msgs = [];\nfor (const h of elegidas) {\n  const sn = sensores[Math.floor(Math.random() * 2)];\n  const sube = Math.random() < 0.5;\n  const temp = sube ? 8.3 + Math.random() * 0.9 : 1.3 + Math.random() * 0.6;\n  msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + sn, hielera: h, temperatura: Math.round(temp * 100) / 100 } });\n}\nreturn [msgs];",
     "outputs": 1,
     "noerr": 0,
     "initialize": "",
     "finalize": "",
     "libs": [],
-    "x": 360,
-    "y": 220,
+    "x": 400,
+    "y": 200,
+    "wires": [
+      [
+        "http-lecturas"
+      ]
+    ]
+  },
+  {
+    "id": "fn-todas",
+    "type": "function",
+    "z": "tab1",
+    "name": "Las 5 criticas (valores realistas)",
+    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst msgs = [];\nfor (const h of hieleras) {\n  for (const sn of ['A','B']) {\n    const temp = sn === 'A' ? 8.4 + Math.random() * 0.8 : 1.3 + Math.random() * 0.6;\n    msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + sn, hielera: h, temperatura: Math.round(temp * 100) / 100 } });\n  }\n}\nreturn [msgs];",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 400,
+    "y": 300,
     "wires": [
       [
         "http-lecturas"
@@ -122,8 +162,8 @@
         "valueValue": "application/json"
       }
     ],
-    "x": 590,
-    "y": 170,
+    "x": 650,
+    "y": 200,
     "wires": [
       [
         "dbg-lecturas"
@@ -143,8 +183,8 @@
     "targetType": "msg",
     "statusVal": "",
     "statusType": "auto",
-    "x": 800,
-    "y": 170,
+    "x": 870,
+    "y": 200,
     "wires": []
   }
 ]
