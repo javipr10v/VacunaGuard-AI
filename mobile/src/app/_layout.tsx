@@ -3,6 +3,7 @@ import { useFonts, Manrope_700Bold, Manrope_800ExtraBold } from '@expo-google-fo
 import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { SyncProvider } from '@/context/SyncContext';
 import { colores } from '@/theme';
 
 function Contenido() {
@@ -50,7 +51,9 @@ export default function RootLayout() {
   }
   return (
     <AuthProvider>
-      <Contenido />
+      <SyncProvider>
+        <Contenido />
+      </SyncProvider>
     </AuthProvider>
   );
 }

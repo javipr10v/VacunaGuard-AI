@@ -4,8 +4,10 @@ import { Alerta, Avatar, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/compon
 import { colores, fuentes } from '@/theme';
 import { buscarCiudadano, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type VacunacionResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
+import { useSync } from '@/context/SyncContext';
 
 export default function VacunarScreen() {
+  const { encolarRegistro } = useSync();
   const [curp, setCurp] = useState('');
   const [ciudadano, setCiudadano] = useState<ConsultaCiudadanoResumen | null>(null);
   const [vacuna, setVacuna] = useState('');
@@ -46,7 +48,12 @@ export default function VacunarScreen() {
       const h = await vacunacionesDe(ciudadano.id);
       setHistorial(h);
     } catch (e) {
-      setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo registrar la dosis' });
+      if (e instanceof ErrorApi && e.message.startsWith('No se pudo conectar') && ciudadano) {
+        encolarRegistro('vacunacion', { ciudadanoId: ciudadano.id, vacuna: vacuna.trim(), lote: lote.trim(), numeroDosis: Number(dosis) });
+        setMensaje({ tipo: 'ok', texto: 'Dosis guardada en modo campo · se enviará al reconectar' });
+      } else {
+        setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo registrar la dosis' });
+      }
     } finally {
       setCargando(false);
     }

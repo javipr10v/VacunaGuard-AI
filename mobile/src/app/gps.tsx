@@ -3,14 +3,16 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { io, type Socket } from 'socket.io-client';
-import { base } from '@/api/client';
+import { base, ErrorApi } from '@/api/client';
 import { enviarUbicacion, ubicacionesRecientes, type UbicacionResumen } from '@/api/vacunaguard';
 import { useAuth } from '@/context/AuthContext';
+import { useSync } from '@/context/SyncContext';
 import { Alerta, Boton, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
 
 export default function GpsScreen() {
   const { usuario } = useAuth();
+  const { encolarRegistro } = useSync();
   const [transmitiendo, setTransmitiendo] = useState(false);
   const [ubicaciones, setUbicaciones] = useState<UbicacionResumen[]>([]);
   const [miPosicion, setMiPosicion] = useState<{ latitud: number; longitud: number } | null>(null);
@@ -40,10 +42,17 @@ export default function GpsScreen() {
     const enviar = async () => {
       try {
         const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-        const u = await enviarUbicacion(pos.coords.latitude, pos.coords.longitude);
-        setMiPosicion({ latitud: u.latitud, longitud: u.longitud });
+        try {
+          const u = await enviarUbicacion(pos.coords.latitude, pos.coords.longitude);
+          setMiPosicion({ latitud: u.latitud, longitud: u.longitud });
+        } catch (e) {
+          // sin señal: el track se guarda en la cola y se envía al reconectar
+          if (e instanceof ErrorApi && e.message.startsWith('No se pudo conectar')) {
+            encolarRegistro('ubicacion', { latitud: pos.coords.latitude, longitud: pos.coords.longitude });
+          }
+        }
       } catch {
-        // sin backend, no detener el intento
+        // sin permiso de GPS: ignorar
       }
     };
     await enviar();

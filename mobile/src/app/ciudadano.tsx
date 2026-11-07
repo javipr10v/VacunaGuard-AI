@@ -4,10 +4,12 @@ import { Alerta, Boton, Campo, Tarjeta, Titulo } from '@/components/ui';
 import { colores } from '@/theme';
 import { registrarCiudadano } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
+import { useSync } from '@/context/SyncContext';
 
 const PATRON_CURP = /^[A-Z][AEIOUX][A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HMX](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d]\d$/;
 
 export default function CiudadanoScreen() {
+  const { encolarRegistro } = useSync();
   const [curp, setCurp] = useState('');
   const [nombre, setNombre] = useState('');
   const [fecha, setFecha] = useState('');
@@ -23,7 +25,13 @@ export default function CiudadanoScreen() {
       const r = await registrarCiudadano({ curp: curp.trim().toUpperCase(), nombre: nombre.trim(), fechaNacimiento: fecha });
       setMensaje({ tipo: 'ok', texto: (r.yaExistia ? 'El ciudadano ya estaba registrado · CURP ' : 'Ciudadano dado de alta · CURP ') + r.curp });
     } catch (e) {
-      setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo registrar' });
+      if (e instanceof ErrorApi && e.message.startsWith('No se pudo conectar')) {
+        encolarRegistro('ciudadano', { curp: curp.trim().toUpperCase(), nombre: nombre.trim(), fechaNacimiento: fecha });
+        setMensaje({ tipo: 'ok', texto: 'Guardado en modo campo · se enviará al volver la señal' });
+        setCurp(''); setNombre(''); setFecha('');
+      } else {
+        setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo registrar' });
+      }
     } finally {
       setCargando(false);
     }
