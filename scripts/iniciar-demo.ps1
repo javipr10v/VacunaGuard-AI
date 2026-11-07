@@ -1,6 +1,9 @@
 # VacunaGuard AI — Arranque de la demo en vivo (UN SOLO COMANDO)
 # Uso: clic derecho > "Ejecutar con PowerShell", o:  powershell -ExecutionPolicy Bypass -File iniciar-demo.ps1
 $ErrorActionPreference = 'Continue'
+# Sesion de Expo para Metro (los procesos hijos la heredan)
+$token = (Get-Content (Join-Path $env:USERPROFILE '.expo-token') -ErrorAction SilentlyContinue | Select-Object -First 1)
+if ($token) { $env:EXPO_TOKEN = $token.Trim() }
 $raiz = 'C:\Users\javie\OneDrive\Documentos\deepseek-harness\default-workspace'
 $logs = Join-Path $raiz 'logs-demo'
 New-Item -ItemType Directory -Force -Path $logs | Out-Null
@@ -25,9 +28,8 @@ Write-Host 'Puente de puertos (Windows -> WSL):'
 Start-Process 'node.exe' -ArgumentList (Join-Path $raiz 'wsl-scripts\relay-puertos.cjs') -WindowStyle Hidden
 Write-Host '  [OK] puente'
 
-$token = (Get-Content (Join-Path $env:USERPROFILE '.expo-token') -ErrorAction SilentlyContinue | Select-Object -First 1)
 $metroDir = Join-Path $raiz 'vacunaguard-app'
-$cmdMetro = '$env:EXPO_TOKEN="' + $token.Trim() + '"; Set-Location "' + $metroDir + '"; npx expo start'
+$cmdMetro = 'Set-Location "' + $metroDir + '"; npx expo start'
 Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $cmdMetro -WindowStyle Hidden
 Write-Host '  [OK] Metro (modo desarrollo, con sesion de Expo)'
 
