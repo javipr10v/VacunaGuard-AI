@@ -1,31 +1,150 @@
 [
-    {
-        "id": "6adca873059368e1",
-        "type": "inject",
-        "z": "f6f2187d.f17ca8",
-        "name": "INYECTAR",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "10",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 240,
-        "wires": [
-            [
-                "feb851d551b42971"
-            ]
-        ]
-    }
+  {
+    "id": "tab1",
+    "type": "tab",
+    "label": "VacunaGuard - Sensores",
+    "disabled": false,
+    "info": "Simulador IoT: 5 hieleras (H-01 a H-05), cada una con 2 sensores (A/B). Boton FORZAR envia alerta critica en las 5 a la vez."
+  },
+  {
+    "id": "inj-auto",
+    "type": "inject",
+    "z": "tab1",
+    "name": "Simular lecturas cada 20s",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "20",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "disabled": true,
+    "x": 130,
+    "y": 120,
+    "wires": [
+      [
+        "fn-auto"
+      ]
+    ]
+  },
+  {
+    "id": "inj-force",
+    "type": "inject",
+    "z": "tab1",
+    "name": "FORZAR alerta en las 5 hieleras",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "forzar",
+    "payloadType": "str",
+    "x": 130,
+    "y": 220,
+    "wires": [
+      [
+        "fn-force"
+      ]
+    ]
+  },
+  {
+    "id": "fn-auto",
+    "type": "function",
+    "z": "tab1",
+    "name": "5 hieleras x 2 sensores",
+    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst sensores = ['A','B'];\nconst msgs = [];\nfor (const h of hieleras) {\n  for (const s of sensores) {\n    const r = Math.random();\n    let temp;\n    if (r < 0.85) temp = 2 + Math.random() * 6;\n    else if (r < 0.93) temp = 8.6 + Math.random() * 3;\n    else temp = 0.5 + Math.random() * 1.5;\n    msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + s, hielera: h, temperatura: Math.round(temp * 10) / 10 } });\n  }\n}\nreturn [msgs];",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 360,
+    "y": 120,
+    "wires": [
+      [
+        "http-lecturas"
+      ]
+    ]
+  },
+  {
+    "id": "fn-force",
+    "type": "function",
+    "z": "tab1",
+    "name": "Todas criticas",
+    "func": "const hieleras = ['H-01','H-02','H-03','H-04','H-05'];\nconst sensores = ['A','B'];\nconst msgs = [];\nfor (const h of hieleras) {\n  for (const s of sensores) {\n    const temp = s === 'A' ? 11.2 : 1.1;\n    msgs.push({ payload: { sensorId: 'S-' + h.slice(2) + '-' + s, hielera: h, temperatura: temp } });\n  }\n}\nreturn [msgs];",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 360,
+    "y": 220,
+    "wires": [
+      [
+        "http-lecturas"
+      ]
+    ]
+  },
+  {
+    "id": "http-lecturas",
+    "type": "http request",
+    "z": "tab1",
+    "name": "POST /lecturas",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "http://host.docker.internal:3002/lecturas",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [
+      {
+        "keyType": "other",
+        "keyValue": "Content-Type",
+        "valueType": "other",
+        "valueValue": "application/json"
+      }
+    ],
+    "x": 590,
+    "y": 170,
+    "wires": [
+      [
+        "dbg-lecturas"
+      ]
+    ]
+  },
+  {
+    "id": "dbg-lecturas",
+    "type": "debug",
+    "z": "tab1",
+    "name": "Lecturas enviadas",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 800,
+    "y": 170,
+    "wires": []
+  }
 ]

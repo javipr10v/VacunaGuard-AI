@@ -33,12 +33,15 @@ export class DescontarStockUseCase {
     await this.lotes.guardar(lote);
 
     if (!estabaBajo && lote.stockBajo()) {
+      const fecha = new Date()
+        .toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+        .replace('T', ' ');
       await this.publisher.publicar('stock.bajo', {
         vacuna: lote.vacuna,
         lote: lote.numeroLote,
         stockRestante: lote.cantidad,
         umbral: lote.umbralStockBajo,
-        fecha: new Date().toISOString(),
+        fecha,
       });
     }
 

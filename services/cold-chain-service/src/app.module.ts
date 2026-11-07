@@ -16,6 +16,7 @@ import { RegistrarLoteUseCase } from './application/use-cases/registrar-lote.use
 import { LecturasController } from './infrastructure/http/lecturas.controller';
 import { LotesController } from './infrastructure/http/lotes.controller';
 import { RabbitMqEventPublisherAdapter } from './infrastructure/messaging/rabbitmq-event-publisher.adapter';
+import { TelegramAlertsBinding } from './infrastructure/messaging/telegram-alerts.binding';
 import { VacunaAplicadaConsumer } from './infrastructure/messaging/vacuna-aplicada.consumer';
 import { LoteOrmEntity } from './infrastructure/persistence/lote.orm-entity';
 import { TypeOrmLoteRepository } from './infrastructure/persistence/typeorm-lote.repository';
@@ -69,6 +70,7 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
       inject: [LOTE_REPOSITORY, EVENT_PUBLISHER],
     },
     VacunaAplicadaConsumer,
+    TelegramAlertsBinding,
     JwtAuthGuard,
     RolesGuard,
     { provide: APP_GUARD, useClass: ThrottlerGuard },

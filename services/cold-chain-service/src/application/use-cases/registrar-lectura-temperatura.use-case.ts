@@ -19,12 +19,15 @@ export class RegistrarLecturaTemperaturaUseCase {
     let alertaPublicada = false;
 
     if (temperatura.esCritica()) {
+      const fecha = new Date()
+        .toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+        .replace('T', ' ');
       await this.publisher.publicar('temperatura.critica', {
         sensorId: dto.sensorId,
         hielera: dto.hielera,
         celsius: temperatura.celsius,
         rangoSeguro: [Temperatura.MIN_SEGURA, Temperatura.MAX_SEGURA],
-        fecha: new Date().toISOString(),
+        fecha,
       });
       alertaPublicada = true;
     }
