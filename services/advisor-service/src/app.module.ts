@@ -16,6 +16,7 @@ import { IngestaDocumentosUseCase } from './application/use-cases/ingesta-docume
 import { ConsultasController } from './infrastructure/http/consultas.controller';
 import { OllamaEmbeddingAdapter } from './infrastructure/llm/ollama-embedding.adapter';
 import { OllamaLlmAdapter } from './infrastructure/llm/ollama-llm.adapter';
+import { OpenRouterLlmAdapter } from './infrastructure/llm/openrouter-llm.adapter';
 import { EsquemaAdvisor } from './infrastructure/persistence/esquema-advisor';
 import { PgVectorFragmentoRepository } from './infrastructure/persistence/pgvector-fragmento.repository';
 import { JwtAuthGuard } from './infrastructure/security/jwt-auth.guard';
@@ -48,7 +49,15 @@ import { RolesGuard } from './infrastructure/security/roles.guard';
     EsquemaAdvisor,
     { provide: FRAGMENTO_REPOSITORY, useClass: PgVectorFragmentoRepository },
     { provide: EMBEDDING_SERVICE, useClass: OllamaEmbeddingAdapter },
-    { provide: LLM_SERVICE, useClass: OllamaLlmAdapter },
+    {
+      provide: LLM_SERVICE,
+      useFactory: (c: ConfigService) => {
+        const proveedor = c.get<string>('LLM_PROVIDER') ?? 'ollama';
+        if (proveedor === 'openrouter') return new OpenRouterLlmAdapter(c);
+        return new OllamaLlmAdapter(c);
+      },
+      inject: [ConfigService],
+    },
     {
       provide: ConsultarProtocoloUseCase,
       useFactory: (
