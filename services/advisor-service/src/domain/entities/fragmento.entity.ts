@@ -11,7 +11,7 @@ export class Fragmento {
     if (!documento || !documento.trim()) {
       throw new DomainException('El documento es obligatorio');
     }
-    if (!Number.isInteger(anio) || anio < 1900 || anio > 2100) {
+    if (!Number.isInteger(anio) || anio < 0 || anio > 2100) {
       throw new DomainException('El año del documento no es válido');
     }
     if (!Number.isInteger(pagina) || pagina < 1) {
@@ -26,6 +26,7 @@ export class Fragmento {
   }
 
   get cita(): string {
-    return `${this.documento} (${this.anio}), p. ${this.pagina}`;
+    const anio = this.anio === 0 ? 's.f.' : String(this.anio);
+    return this.documento + ' (' + anio + '), p. ' + this.pagina;
   }
 }
