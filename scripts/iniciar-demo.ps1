@@ -25,13 +25,14 @@ Write-Host 'Puente de puertos (Windows -> WSL):'
 Start-Process 'node.exe' -ArgumentList (Join-Path $raiz 'wsl-scripts\relay-puertos.cjs') -WindowStyle Hidden
 Write-Host '  [OK] puente'
 
-Write-Host 'Metro en MODO PRODUCCION (Expo Go):'
 $token = (Get-Content (Join-Path $env:USERPROFILE '.expo-token') -ErrorAction SilentlyContinue | Select-Object -First 1)
-if (-not $token) { Write-Host '  [AVISO] sin token de Expo en ~/.expo-token' -ForegroundColor Yellow }
 $metroDir = Join-Path $raiz 'vacunaguard-app'
-$cmd = 'set EXPO_TOKEN=' + $token + '&& cd /d "' + $metroDir + '" && npx expo start --no-dev'
-Start-Process 'cmd.exe' -ArgumentList '/c', $cmd -WindowStyle Hidden
-Write-Host '  [OK] Metro (modo produccion)'
+$cmdFile = Join-Path $logs 'start-metro.cmd'
+$contenido = '@echo off' + [Environment]::NewLine + 'set "EXPO_TOKEN=' + $token.Trim() + '"' + [Environment]::NewLine + 'cd /d "' + $metroDir + '"' + [Environment]::NewLine + 'npx expo start'
+Set-Content -Path $cmdFile -Value $contenido -Encoding ASCII
+Start-Process $cmdFile -WindowStyle Hidden
+Write-Host '  [OK] Metro (modo desarrollo, con sesion de Expo)'
+
 
 Start-Sleep -Seconds 14
 
