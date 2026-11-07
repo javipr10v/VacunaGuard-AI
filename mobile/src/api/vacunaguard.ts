@@ -115,6 +115,12 @@ export const vacunacionesDe = (id: string) =>
 export const registrarVacunacion = (dto: { ciudadanoId: string; vacuna: string; lote: string; numeroDosis: number; reaccionAdversa?: string }) =>
   peticion<{ registroId: string }>('registry', '/vacunaciones', { metodo: 'POST', cuerpo: dto });
 
+export const crearLote = (dto: { vacuna: string; numeroLote: string; cantidad: number; fechaCaducidad: string; umbralStockBajo?: number }) =>
+  peticion<LoteResumen>('coldChain', '/lotes', { metodo: 'POST', cuerpo: dto });
+
+export const registrarUsuario = (dto: { nombre: string; email: string; password: string; rol: UsuarioResumen['rol'] }) =>
+  peticion<UsuarioResumen>('identity', '/auth/registro', { metodo: 'POST', cuerpo: dto });
+
 export const consultarProtocolo = (pregunta: string) =>
   peticion<ResultadoConsulta>('advisor', '/consultas', { metodo: 'POST', cuerpo: { pregunta } });
 

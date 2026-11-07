@@ -42,7 +42,7 @@ export default function VacunarScreen() {
     setCargando(true);
     try {
       await registrarVacunacion({ ciudadanoId: ciudadano.id, vacuna: vacuna.trim(), lote: lote.trim(), numeroDosis: Number(dosis) });
-      setMensaje({ tipo: 'ok', texto: 'Dosis registrada · el stock del lote se descontó vía RabbitMQ' });
+      setMensaje({ tipo: 'ok', texto: 'Dosis registrada · el stock del lote se actualizó' });
       const h = await vacunacionesDe(ciudadano.id);
       setHistorial(h);
     } catch (e) {

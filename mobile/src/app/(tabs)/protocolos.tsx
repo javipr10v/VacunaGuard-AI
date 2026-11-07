@@ -39,7 +39,7 @@ export default function ProtocolosScreen() {
   return (
     <View style={estilos.fondo}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={estilos.contenido}>
-        <Titulo texto="Consultor de protocolos" sub="RAG · pgvector + Ollama" />
+        <Titulo texto="Consultor de protocolos" sub="Protocolos oficiales de vacunación" />
         {error ? <Alerta tipo="critico" titulo={error} /> : null}
         {mensajes.length === 0 ? (
           <Alerta tipo="ok" titulo="Pregúntame sobre esquemas, dosis o contraindicaciones" detalle="Las respuestas citan los documentos oficiales" />

@@ -46,7 +46,7 @@ export default function RutasScreen() {
 
   return (
     <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido}>
-      <Titulo texto="Ruta de hoy" sub="Optimizada con PostGIS" />
+      <Titulo texto="Ruta de hoy" sub="Orden óptimo de paradas" />
       <View style={estilos.mapa}>
         <MapView style={{ flex: 1 }} initialRegion={{ ...TUZTLA, latitudeDelta: 0.35, longitudeDelta: 0.35 }}>
           {puntos.map((p) => (
@@ -60,7 +60,7 @@ export default function RutasScreen() {
       {mensaje ? <Alerta tipo="critico" titulo={mensaje} /> : null}
       {ruta ? (
         <Tarjeta>
-          <Text style={estilos.resumen}>62.4 km de referencia · {ruta.distanciaTotalKm} km calculados · {ruta.personasEstimadas} personas</Text>
+          <Text style={estilos.resumen}>Distancia total: {ruta.distanciaTotalKm} km · {ruta.personasEstimadas} personas estimadas</Text>
           {ruta.paradas.map((p) => (
             <View key={p.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
               <Text style={estilos.parada}>{p.orden}. {p.nombre}</Text>

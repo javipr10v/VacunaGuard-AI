@@ -23,14 +23,20 @@ export default function PanelScreen() {
   );
 
   const criticos = lotes.filter((l) => l.caducado || l.stockBajo);
-  const tiles = [
+  const tiles: { icono: keyof typeof Ionicons.glyphMap; etiqueta: string; ruta: string }[] = [
     { icono: 'person-add-outline', etiqueta: 'Ciudadano', ruta: '/ciudadano' },
     { icono: 'medkit-outline', etiqueta: 'Vacunar', ruta: '/vacunar' },
     { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },
     { icono: 'chatbubbles-outline', etiqueta: 'Protocolos IA', ruta: '/protocolos' },
     { icono: 'map-outline', etiqueta: 'Mi ruta', ruta: '/rutas' },
     { icono: 'navigate-outline', etiqueta: 'Ubicación', ruta: '/gps' },
-  ] as const;
+  ];
+  if (usuario?.rol === 'ADMINISTRADOR' || usuario?.rol === 'COORDINADOR') {
+    tiles.push({ icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' });
+  }
+  if (usuario?.rol === 'ADMINISTRADOR') {
+    tiles.push({ icono: 'people-outline', etiqueta: 'Nuevo brigadista', ruta: '/nuevo-usuario' });
+  }
 
   return (
     <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido}>

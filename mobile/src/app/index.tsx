@@ -36,7 +36,7 @@ export default function LoginScreen() {
           <Campo etiqueta="Contraseña" value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••••" />
           {error ? <Alerta tipo="critico" titulo={error} /> : null}
           <Boton titulo="Entrar a mi brigada" onPress={iniciar} cargando={cargando} deshabilitado={!email.trim() || !password} />
-          <Text style={estilos.nota}>Sesión protegida con JWT · roles de brigada</Text>
+          <Text style={estilos.nota}>VacunaGuard AI · Coordinación de brigadas de salud</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

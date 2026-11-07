@@ -40,7 +40,7 @@ export default function CiudadanoScreen() {
         <Boton titulo="Dar de alta" onPress={enviar} cargando={cargando} deshabilitado={!curpValida || !nombre.trim() || !fecha.trim()} />
       </Tarjeta>
       {mensaje ? <Alerta tipo={mensaje.tipo} titulo={mensaje.texto} /> : null}
-      <Alerta tipo="ok" titulo="🔒 CURP protegida" detalle="Viaja cifrada AES-256-GCM; el servidor guarda solo la huella HMAC" />
+      <Alerta tipo="ok" titulo="🔒 Datos protegidos" detalle="La CURP viaja cifrada de extremo a extremo" />
     </ScrollView>
   );
 };
