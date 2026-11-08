@@ -6,6 +6,7 @@ import { colores, fuentes } from '@/theme';
 import { eliminarLote, listarLotes, type LoteResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useAuth } from '@/context/AuthContext';
+import { Fondo } from '@/components/Fondo';
 
 export default function RedFrioScreen() {
   const { usuario } = useAuth();
@@ -43,7 +44,8 @@ export default function RedFrioScreen() {
   );
 
   return (
-    <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido}>
+    <Fondo>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={estilos.contenido}>
       <Titulo texto="Red de frío" sub="Lotes y stock de la brigada" />
       {error ? <Alerta tipo="critico" titulo="Sin conexión con cold-chain" /> : null}
       {mensaje ? <Alerta tipo="ok" titulo={mensaje} /> : null}
@@ -72,6 +74,7 @@ export default function RedFrioScreen() {
       })}
       {lotes.length === 0 && !error ? <Alerta tipo="ok" titulo="Sin lotes registrados" /> : null}
     </ScrollView>
+    </Fondo>
   );
 };
 

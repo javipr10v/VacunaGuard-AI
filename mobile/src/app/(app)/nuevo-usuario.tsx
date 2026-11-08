@@ -48,7 +48,6 @@ export default function NuevoUsuarioScreen() {
         <Boton titulo="Registrar usuario" onPress={enviar} cargando={cargando} deshabilitado={!nombre.trim() || !email.trim() || password.length < 8} />
       </Tarjeta>
       {mensaje ? <Alerta tipo={mensaje.tipo} titulo={mensaje.texto} /> : null}
-      <Alerta tipo="ok" titulo="🔑 Podrá entrar desde la app" detalle="Con su correo y contraseña, y su rol correspondiente" />
     </ScrollView>
   );
 }

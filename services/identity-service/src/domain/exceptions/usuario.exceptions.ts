@@ -7,6 +7,13 @@ export class EmailDuplicadoException extends DomainException {
   }
 }
 
+export class SinPermisoException extends DomainException {
+  constructor(mensaje = 'No tienes permiso para esta operación') {
+    super(mensaje);
+    this.name = 'SinPermisoException';
+  }
+}
+
 export class UsuarioNoEncontradoException extends DomainException {
   constructor() {
     super('Usuario no encontrado');

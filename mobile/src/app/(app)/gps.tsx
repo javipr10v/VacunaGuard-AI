@@ -90,7 +90,7 @@ export default function GpsScreen() {
       {usuario?.rol === 'BRIGADISTA' ? (
         <Boton titulo={transmitiendo ? 'Detener transmisión' : 'Transmitir mi ubicación'} onPress={alternar} variante={transmitiendo ? 'fantasma' : 'primario'} />
       ) : null}
-      <Alerta tipo="ok" titulo={marcadores.length + ' brigadistas en el mapa'} detalle="Posiciones actualizadas cada 10 segundos" />
+      <Alerta tipo="ok" titulo={marcadores.length + ' brigadistas en el mapa'} />
       <Tarjeta>
         {marcadores.map((u) => (
           <View key={u.brigadistaId} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>

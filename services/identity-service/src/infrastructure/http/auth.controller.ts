@@ -43,14 +43,14 @@ export class AuthController {
   @Get('usuarios')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
-  usuarios() {
-    return this.listarUsuarios.ejecutar();
+  usuarios(@Req() req: { usuario: { rol: string } }) {
+    return this.listarUsuarios.ejecutar(req.usuario.rol);
   }
 
   @Patch('usuarios/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
-  usuario(@Param('id') id: string, @Body() dto: ActualizarUsuarioDto) {
-    return this.actualizarUsuario.ejecutar(id, dto);
+  usuario(@Param('id') id: string, @Body() dto: ActualizarUsuarioDto, @Req() req: { usuario: { rol: string } }) {
+    return this.actualizarUsuario.ejecutar(id, dto, req.usuario.rol);
   }
 }

@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Fondo } from '@/components/Fondo';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { Alerta, Boton, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { MapaOffline } from '@/components/MapaOffline';
@@ -108,7 +109,8 @@ export default function RutasScreen() {
     : [];
 
   return (
-    <SafeAreaView edges={['top']} style={estilos.fondo}>
+    <Fondo>
+    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={estilos.contenido}>
         <Titulo texto={esBrigadista ? 'Mi ruta' : 'Asignar ruta'} sub={esBrigadista ? 'Ruta de la brigada' : 'Orden óptimo de paradas'} />
         {enLinea ? (
@@ -164,11 +166,12 @@ export default function RutasScreen() {
         ) : null}
       </ScrollView>
     </SafeAreaView>
+    </Fondo>
   );
 }
 
 const estilos = StyleSheet.create({
-  fondo: { flex: 1, backgroundColor: colores.fondo },
+  fondo: { flex: 1, backgroundColor: 'transparent' },
   contenido: { padding: 18, gap: 11 },
   mapa: { height: 250, borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: colores.linea },
   filaPill: { flexDirection: 'row', alignItems: 'center', gap: 8 },

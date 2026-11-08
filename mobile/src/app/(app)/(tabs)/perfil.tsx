@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Fondo } from '@/components/Fondo';
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, Boton, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
@@ -7,7 +8,8 @@ import { colores, fuentes } from '@/theme';
 export default function PerfilScreen() {
   const { usuario, salir } = useAuth();
   return (
-    <SafeAreaView edges={['top']} style={estilos.fondo}>
+    <Fondo>
+    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={estilos.contenido}>
       <Titulo texto="Mi perfil" sub="Sesión de brigadista" />
       <Tarjeta>
@@ -23,11 +25,12 @@ export default function PerfilScreen() {
       <Boton titulo="Cerrar sesión" onPress={salir} variante="fantasma" />
     </ScrollView>
     </SafeAreaView>
+    </Fondo>
   );
 };
 
 const estilos = StyleSheet.create({
-  fondo: { flex: 1, backgroundColor: colores.fondo },
+  fondo: { flex: 1, backgroundColor: 'transparent' },
   contenido: { padding: 18, gap: 11 },
   nombre: { fontFamily: fuentes.medio, fontSize: 15, color: colores.texto },
   detalle: { fontFamily: fuentes.cuerpo, fontSize: 12, color: colores.mutado },

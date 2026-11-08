@@ -51,7 +51,6 @@ export default function NuevoLoteScreen() {
         />
       </Tarjeta>
       {mensaje ? <Alerta tipo={mensaje.tipo} titulo={mensaje.texto} /> : null}
-      <Alerta tipo="ok" titulo="❄️ El lote quedará disponible para aplicar dosis" detalle="El stock se descuenta automáticamente con cada vacunación" />
     </ScrollView>
   );
 }

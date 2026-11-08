@@ -5,6 +5,7 @@ import { Alerta, Avatar, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
 import { actualizarUsuario, listarUsuarios, type UsuarioResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
+import { Fondo } from '@/components/Fondo';
 
 export default function UsuariosScreen() {
   const [usuarios, setUsuarios] = useState<UsuarioResumen[]>([]);
@@ -48,7 +49,8 @@ export default function UsuariosScreen() {
   };
 
   return (
-    <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
+    <Fondo>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
       <Titulo texto="Brigadistas y personal" sub="Activar, desactivar y asignar brigada" />
       {mensaje ? <Alerta tipo={mensaje.tipo} titulo={mensaje.texto} /> : null}
       {usuarios.map((u) => (
@@ -84,6 +86,7 @@ export default function UsuariosScreen() {
         </Tarjeta>
       ))}
     </ScrollView>
+    </Fondo>
   );
 }
 
