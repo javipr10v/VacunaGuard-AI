@@ -59,7 +59,12 @@ export default function ProtocolosScreen() {
             ) : null}
           </View>
         ))}
-        {cargando ? <Text style={estilos.pensando}>Consultando los documentos…</Text> : null}
+        {cargando ? (
+          <View style={estilos.pensandoCaja}>
+            <Text style={estilos.pensando}>🧠 La IA está leyendo los documentos oficiales…</Text>
+            <Text style={estilos.pensandoDetalle}>Puede tardar hasta un minuto, no cierres la app</Text>
+          </View>
+        ) : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           {SUGERENCIAS.map((s) => (
             <TouchableOpacity key={s} onPress={() => preguntar(s)}>
@@ -95,7 +100,9 @@ const estilos = StyleSheet.create({
   textoUsuario: { color: '#ffffff', fontSize: 13, fontFamily: fuentes.cuerpo },
   textoAi: { color: colores.texto, fontSize: 13, fontFamily: fuentes.cuerpo },
   cita: { fontSize: 10, fontFamily: fuentes.medio, color: colores.primario700, backgroundColor: colores.celeste100, paddingVertical: 2, paddingHorizontal: 7, borderRadius: 999, overflow: 'hidden' },
-  pensando: { fontSize: 11.5, color: colores.mutado, fontFamily: fuentes.cuerpo, fontStyle: 'italic' },
+  pensandoCaja: { backgroundColor: colores.celeste100, borderRadius: 12, padding: 10, gap: 2 },
+  pensando: { fontSize: 12, color: colores.primario700, fontFamily: fuentes.medio },
+  pensandoDetalle: { fontSize: 10.5, color: colores.mutado, fontFamily: fuentes.cuerpo },
   sugerencia: { fontSize: 11, fontFamily: fuentes.medio, color: '#475569', backgroundColor: '#f1f5f9', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 999, overflow: 'hidden' },
   entrada: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', gap: 8, padding: 12, backgroundColor: colores.superficie, borderTopWidth: 1, borderTopColor: colores.linea, alignItems: 'center' },
   campo: { flex: 1, backgroundColor: colores.fondo, borderWidth: 1, borderColor: colores.linea, borderRadius: 999, paddingVertical: 10, paddingHorizontal: 16, fontSize: 13, color: colores.texto, fontFamily: fuentes.cuerpo },

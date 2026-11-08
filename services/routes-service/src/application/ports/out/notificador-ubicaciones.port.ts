@@ -3,6 +3,7 @@ export const NOTIFICADOR_UBICACIONES = Symbol('NOTIFICADOR_UBICACIONES');
 export interface UbicacionResumen {
   id: string;
   brigadistaId: string;
+  nombre: string;
   brigadaId: string | null;
   latitud: number;
   longitud: number;

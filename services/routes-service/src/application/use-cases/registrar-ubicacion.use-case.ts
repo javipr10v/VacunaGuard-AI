@@ -15,12 +15,14 @@ export class RegistrarUbicacionUseCase {
   async ejecutar(
     dto: RegistrarUbicacionDto,
     brigadistaId: string,
+    nombre: string,
     brigadaId: string | null,
   ): Promise<UbicacionResumen> {
     const coordenada = Coordenada.crear(dto.latitud, dto.longitud);
     const ubicacion = new UbicacionBrigadista(
       this.ids.generar(),
       brigadistaId,
+      nombre,
       brigadaId,
       coordenada,
       new Date(),
@@ -29,6 +31,7 @@ export class RegistrarUbicacionUseCase {
     const resumen: UbicacionResumen = {
       id: ubicacion.id,
       brigadistaId: ubicacion.brigadistaId,
+      nombre: ubicacion.nombre,
       brigadaId: ubicacion.brigadaId,
       latitud: ubicacion.coordenada.latitud,
       longitud: ubicacion.coordenada.longitud,

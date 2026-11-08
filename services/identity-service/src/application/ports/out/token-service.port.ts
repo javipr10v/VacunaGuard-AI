@@ -4,6 +4,7 @@ export const TOKEN_SERVICE = Symbol('TOKEN_SERVICE');
 
 export interface TokenPayload {
   sub: string;
+  nombre: string;
   rol: Rol;
   brigadaId: string | null;
 }

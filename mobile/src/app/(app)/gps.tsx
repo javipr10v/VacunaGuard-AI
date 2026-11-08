@@ -83,7 +83,7 @@ export default function GpsScreen() {
       <View style={estilos.mapa}>
         <MapView style={{ flex: 1 }} initialRegion={{ latitude: 16.7528, longitude: -93.1152, latitudeDelta: 0.4, longitudeDelta: 0.4 }}>
           {marcadores.map((u) => (
-            <Marker key={u.brigadistaId} coordinate={{ latitude: u.latitud, longitude: u.longitud }} title={u.brigadistaId} pinColor={colores.ok} />
+            <Marker key={u.brigadistaId} coordinate={{ latitude: u.latitud, longitude: u.longitud }} title={u.nombre} pinColor={colores.ok} />
           ))}
           {miPosicion ? <Marker coordinate={{ latitude: miPosicion.latitud, longitude: miPosicion.longitud }} title="Yo" pinColor={colores.critico} /> : null}
         </MapView>
@@ -99,9 +99,12 @@ export default function GpsScreen() {
       <Alerta tipo="ok" titulo={marcadores.length + ' brigadistas en el mapa'} />
       <Tarjeta>
         {marcadores.map((u) => (
-          <View key={u.brigadistaId} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
-            <Text style={estilos.nombre}>{u.brigadistaId} · brigada {u.brigadaId ?? '—'}</Text>
-            <Text style={estilos.detalle}>{new Date(u.fecha).toLocaleTimeString()}</Text>
+          <View key={u.brigadistaId} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={estilos.nombre}>📍 {u.nombre}</Text>
+              <Text style={estilos.detalle}>Brigada {u.brigadaId ?? '—'} · {new Date(u.fecha).toLocaleTimeString()}</Text>
+            </View>
+            <Text style={{ fontFamily: fuentes.medio, fontSize: 10, paddingVertical: 3, paddingHorizontal: 9, borderRadius: 999, overflow: 'hidden', backgroundColor: colores.okFondo, color: colores.ok }}>● activa</Text>
           </View>
         ))}
         {marcadores.length === 0 ? <Text style={estilos.detalle}>Aún no hay posiciones recientes</Text> : null}

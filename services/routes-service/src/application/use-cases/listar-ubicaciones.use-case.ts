@@ -9,6 +9,7 @@ export class ListarUbicacionesUseCase {
     return recientes.map((u) => ({
       id: u.id,
       brigadistaId: u.brigadistaId,
+      nombre: u.nombre,
       brigadaId: u.brigadaId,
       latitud: u.coordenada.latitud,
       longitud: u.coordenada.longitud,

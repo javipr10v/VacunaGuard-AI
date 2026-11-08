@@ -40,6 +40,7 @@ export class IniciarSesionUseCase {
 
     const accessToken = await this.tokens.firmar({
       sub: usuario.id,
+      nombre: usuario.nombre,
       rol: usuario.rol,
       brigadaId: usuario.brigadaId,
     });

@@ -79,6 +79,7 @@ export interface ResultadoConsulta {
 export interface UbicacionResumen {
   id: string;
   brigadistaId: string;
+  nombre: string;
   brigadaId: string | null;
   latitud: number;
   longitud: number;

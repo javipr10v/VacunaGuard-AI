@@ -22,6 +22,7 @@ export default function RutasScreen() {
   const [puntos, setPuntos] = useState<PuntoLocal[]>([]);
   const [ruta, setRuta] = useState<RutaLocal | null>(null);
   const [mensaje, setMensaje] = useState('');
+  const [brigadaId, setBrigadaId] = useState('B-12');
   const [mostrarForm, setMostrarForm] = useState(false);
   const [nombreP, setNombreP] = useState('');
   const [latP, setLatP] = useState('');
@@ -114,7 +115,7 @@ export default function RutasScreen() {
     if (puntos.length === 0) return;
     try {
       const r = await planificarRuta({
-        brigadaId: 'B-12',
+        brigadaId: brigadaId.trim() || 'B-12',
         origenLatitud: TUZTLA.latitude,
         origenLongitud: TUZTLA.longitude,
         puntoIds: puntos.map((p) => p.id),
@@ -155,6 +156,9 @@ export default function RutasScreen() {
             {!esBrigadista ? (
               <>
                 <Boton titulo={mostrarForm ? 'Ocultar formulario' : 'Agregar punto de visita'} onPress={() => setMostrarForm(!mostrarForm)} variante={mostrarForm ? 'fantasma' : 'primario'} />
+                <Tarjeta>
+                  <Campo etiqueta="Brigada destino (ej. B-12)" value={brigadaId} onChangeText={setBrigadaId} placeholder="B-12" />
+                </Tarjeta>
                 {mostrarForm ? (
                   <Tarjeta>
                     <Campo etiqueta="Nombre del punto (ej. Pichucalco, Tapachula…)" value={nombreP} onChangeText={setNombreP} placeholder="Tapachula" />

@@ -14,8 +14,8 @@ describe('Lecturas y GPS (routes)', () => {
     const repo = new UbicacionesMemoria();
     const notificador = new NotificadorFalso();
     const useCase = new RegistrarUbicacionUseCase(repo, new IdsFalso(), notificador);
-    const r = await useCase.ejecutar({ latitud: 16.75, longitud: -93.11 }, 'b1', 'B-12');
-    expect(r).toMatchObject({ brigadistaId: 'b1', brigadaId: 'B-12', latitud: 16.75, longitud: -93.11 });
+    const r = await useCase.ejecutar({ latitud: 16.75, longitud: -93.11 }, 'b1', 'Ana', 'B-12');
+    expect(r).toMatchObject({ brigadistaId: 'b1', nombre: 'Ana', brigadaId: 'B-12', latitud: 16.75, longitud: -93.11 });
     expect(repo.items).toHaveLength(1);
     expect(notificador.resumenes).toHaveLength(1);
   });
@@ -23,10 +23,10 @@ describe('Lecturas y GPS (routes)', () => {
   it('lista solo las ubicaciones recientes', async () => {
     const repo = new UbicacionesMemoria();
     const reciente = new (await import('../../domain/entities/ubicacion.entity')).UbicacionBrigadista(
-      'u1', 'b1', 'B-12', Coordenada.crear(16.7, -93.1), new Date(),
+      'u1', 'b1', 'Ana', 'B-12', Coordenada.crear(16.7, -93.1), new Date(),
     );
     const vieja = new (await import('../../domain/entities/ubicacion.entity')).UbicacionBrigadista(
-      'u2', 'b2', 'B-07', Coordenada.crear(16.6, -93.2), new Date(Date.now() - 60 * 60_000),
+      'u2', 'b2', 'Luis', 'B-07', Coordenada.crear(16.6, -93.2), new Date(Date.now() - 60 * 60_000),
     );
     repo.items.push(reciente, vieja);
     const r = await new ListarUbicacionesUseCase(repo).ejecutar(5);

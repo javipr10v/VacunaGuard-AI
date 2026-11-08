@@ -69,7 +69,7 @@ export class RutasController {
   @Post('ubicaciones')
   @Roles('ADMINISTRADOR', 'COORDINADOR', 'BRIGADISTA')
   ubicacion(@Body() dto: RegistrarUbicacionDto, @Req() req: { usuario: TokenPayload }) {
-    return this.registrarUbicacion.ejecutar(dto, req.usuario.sub, req.usuario.brigadaId);
+    return this.registrarUbicacion.ejecutar(dto, req.usuario.sub, req.usuario.nombre, req.usuario.brigadaId);
   }
 
   @Get('ubicaciones')

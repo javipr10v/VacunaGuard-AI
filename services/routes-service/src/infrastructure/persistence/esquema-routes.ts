@@ -48,10 +48,12 @@ export class EsquemaRoutes implements OnModuleInit {
       `CREATE TABLE IF NOT EXISTS ubicaciones_brigadista (
         id uuid PRIMARY KEY,
         brigadista_id varchar(64) NOT NULL,
+        nombre varchar(120),
         brigada_id varchar(64),
         ubicacion geography(Point, 4326) NOT NULL,
         creado_en timestamptz NOT NULL DEFAULT now()
       )`,
+      'ALTER TABLE ubicaciones_brigadista ADD COLUMN IF NOT EXISTS nombre varchar(120)',
       'CREATE INDEX IF NOT EXISTS idx_ubicaciones_creado ON ubicaciones_brigadista (creado_en DESC)',
     ];
     for (const sentencia of sentencias) {
