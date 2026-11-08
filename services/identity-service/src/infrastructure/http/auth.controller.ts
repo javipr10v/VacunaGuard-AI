@@ -1,9 +1,12 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { IniciarSesionDto } from '../../application/dto/iniciar-sesion.dto';
 import { RegistrarUsuarioDto } from '../../application/dto/registrar-usuario.dto';
 import { ActualizarUsuarioDto } from '../../application/dto/actualizar-usuario.dto';
+import { ActualizarBrigadaDto } from '../../application/dto/actualizar-brigada.dto';
+import { CrearBrigadaDto } from '../../application/dto/crear-brigada.dto';
 import { ActualizarUsuarioUseCase, ListarUsuariosUseCase } from '../../application/use-cases/gestion-usuarios.use-case';
+import { ActualizarBrigadaUseCase, CrearBrigadaUseCase, EliminarBrigadaUseCase, ListarBrigadasUseCase } from '../../application/use-cases/gestion-brigadas.use-case';
 import { IniciarSesionUseCase } from '../../application/use-cases/iniciar-sesion.use-case';
 import { RegistrarUsuarioUseCase } from '../../application/use-cases/registrar-usuario.use-case';
 import { Rol } from '../../domain/value-objects/rol.vo';
@@ -18,6 +21,10 @@ export class AuthController {
     private readonly registrarUsuario: RegistrarUsuarioUseCase,
     private readonly listarUsuarios: ListarUsuariosUseCase,
     private readonly actualizarUsuario: ActualizarUsuarioUseCase,
+    private readonly listarBrigadas: ListarBrigadasUseCase,
+    private readonly crearBrigada: CrearBrigadaUseCase,
+    private readonly actualizarBrigada: ActualizarBrigadaUseCase,
+    private readonly eliminarBrigada: EliminarBrigadaUseCase,
   ) {}
 
   @Post('login')
@@ -52,5 +59,33 @@ export class AuthController {
   @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
   usuario(@Param('id') id: string, @Body() dto: ActualizarUsuarioDto, @Req() req: { usuario: { rol: string } }) {
     return this.actualizarUsuario.ejecutar(id, dto, req.usuario.rol);
+  }
+
+  @Get('brigadas')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  brigadas() {
+    return this.listarBrigadas.ejecutar();
+  }
+
+  @Post('brigadas')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  brigadaAlta(@Body() dto: CrearBrigadaDto) {
+    return this.crearBrigada.ejecutar(dto);
+  }
+
+  @Patch('brigadas/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  brigadaEditar(@Param('id') id: string, @Body() dto: ActualizarBrigadaDto) {
+    return this.actualizarBrigada.ejecutar(id, dto);
+  }
+
+  @Delete('brigadas/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  brigadaBaja(@Param('id') id: string) {
+    return this.eliminarBrigada.ejecutar(id);
   }
 }

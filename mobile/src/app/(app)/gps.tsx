@@ -145,6 +145,7 @@ export default function GpsScreen() {
       {esCoord ? (
         <>
           <Alerta tipo="ok" titulo={fichas.length + ' brigadistas asignados · ' + transmitiendoAhora + ' transmitiendo'} />
+          <Text style={estilos.hint}>💡 Los brigadistas en “sin señal” aún no han tocado “Transmitir mi ubicación” en su celular. En cuanto lo hagan, su punto se mueve aquí en vivo.</Text>
           <Tarjeta>
             {fichas.map((f) => {
               const enVivo = f.fecha !== null && haceMinutos(f.fecha) < 10;
@@ -181,4 +182,5 @@ const estilos = StyleSheet.create({
   nombre: { fontFamily: fuentes.medio, fontSize: 12.5, color: colores.texto },
   detalle: { fontFamily: fuentes.cuerpo, fontSize: 11.5, color: colores.mutado },
   estado: { fontFamily: fuentes.medio, fontSize: 10, paddingVertical: 3, paddingHorizontal: 9, borderRadius: 999, overflow: 'hidden' },
+  hint: { fontFamily: fuentes.cuerpo, fontSize: 11, color: colores.mutado },
 });

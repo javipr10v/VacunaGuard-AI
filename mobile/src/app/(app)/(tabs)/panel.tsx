@@ -45,6 +45,7 @@ export default function PanelScreen() {
     ],
     COORDINADOR: [
       { icono: 'map-outline', etiqueta: 'Asignar ruta', ruta: '/rutas' },
+      { icono: 'bus-outline', etiqueta: 'Brigadas', ruta: '/brigadas' },
       { icono: 'people-outline', etiqueta: 'Personal', ruta: '/usuarios' },
       { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },
       { icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' },
@@ -53,6 +54,7 @@ export default function PanelScreen() {
     ],
     ADMINISTRADOR: [
       { icono: 'people-outline', etiqueta: 'Personal', ruta: '/usuarios' },
+      { icono: 'bus-outline', etiqueta: 'Brigadas', ruta: '/brigadas' },
       { icono: 'person-add-outline', etiqueta: 'Nuevo brigadista', ruta: '/nuevo-usuario' },
       { icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' },
       { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },

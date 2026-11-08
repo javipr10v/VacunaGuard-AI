@@ -1,6 +1,8 @@
 import { SinPermisoException, UsuarioNoEncontradoException } from '../../domain/exceptions/usuario.exceptions';
+import { BrigadaNoEncontradaException } from '../../domain/exceptions/brigada.exceptions';
 import type { Usuario } from '../../domain/entities/usuario.entity';
 import type { ActualizarUsuarioDto } from '../dto/actualizar-usuario.dto';
+import type { BrigadaRepositoryPort } from '../ports/out/brigada.repository.port';
 import type { UsuarioRepositoryPort } from '../ports/out/usuario.repository.port';
 
 export interface UsuarioResumen {
@@ -37,7 +39,10 @@ export class ListarUsuariosUseCase {
 }
 
 export class ActualizarUsuarioUseCase {
-  constructor(private readonly usuarios: UsuarioRepositoryPort) {}
+  constructor(
+    private readonly usuarios: UsuarioRepositoryPort,
+    private readonly brigadas: BrigadaRepositoryPort,
+  ) {}
 
   async ejecutar(id: string, dto: ActualizarUsuarioDto, rolSolicitante: string): Promise<UsuarioResumen> {
     const usuario = await this.usuarios.buscarPorId(id);
@@ -57,8 +62,13 @@ export class ActualizarUsuarioUseCase {
       else usuario.desactivar();
     }
     if (dto.brigadaId !== undefined && dto.brigadaId !== usuario.brigadaId) {
-      if (dto.brigadaId) usuario.asignarBrigada(dto.brigadaId);
-      else usuario.quitarBrigada();
+      if (dto.brigadaId) {
+        const brigada = await this.brigadas.buscarPorClave(dto.brigadaId.trim().toUpperCase());
+        if (!brigada) throw new BrigadaNoEncontradaException();
+        usuario.asignarBrigada(brigada.clave);
+      } else {
+        usuario.quitarBrigada();
+      }
     }
     await this.usuarios.guardar(usuario);
     return resumir(usuario);

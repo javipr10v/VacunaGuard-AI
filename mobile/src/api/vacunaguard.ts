@@ -114,6 +114,23 @@ export const consultarCiudadano = (id: string) =>
 export const eliminarCiudadano = (id: string) =>
   peticion<{ eliminado: boolean }>('registry', '/ciudadanos/' + id, { metodo: 'DELETE' });
 
+export interface BrigadaResumen {
+  id: string;
+  clave: string;
+  nombre: string;
+}
+
+export const listarBrigadas = () => peticion<BrigadaResumen[]>('identity', '/auth/brigadas');
+
+export const crearBrigada = (clave: string, nombre: string) =>
+  peticion<BrigadaResumen>('identity', '/auth/brigadas', { metodo: 'POST', cuerpo: { clave, nombre } });
+
+export const actualizarBrigada = (id: string, datos: { nombre?: string; clave?: string }) =>
+  peticion<BrigadaResumen>('identity', '/auth/brigadas/' + id, { metodo: 'PATCH', cuerpo: datos });
+
+export const eliminarBrigada = (id: string) =>
+  peticion<{ eliminado: boolean }>('identity', '/auth/brigadas/' + id, { metodo: 'DELETE' });
+
 export const vacunacionesDe = (id: string) =>
   peticion<VacunacionResumen[]>('registry', '/ciudadanos/' + id + '/vacunaciones');
 

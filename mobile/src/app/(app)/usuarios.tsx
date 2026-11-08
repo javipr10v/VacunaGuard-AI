@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Alerta, Avatar, Pildora, Tarjeta, Titulo } from '@/components/ui';
+import { SelectorBrigada } from '@/components/SelectorBrigada';
 import { colores, fuentes } from '@/theme';
 import { actualizarUsuario, listarUsuarios, type UsuarioResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
@@ -66,13 +67,7 @@ export default function UsuariosScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }}>
             <View style={{ flex: 1 }}>
               <Text style={estilos.etiqueta}>ROL: {u.rol}</Text>
-              <TextInput
-                style={estilos.campo}
-                placeholder={'Brigada (ej. B-12)'}
-                placeholderTextColor="#94a3b8"
-                value={brigadas[u.id] ?? u.brigadaId ?? ''}
-                onChangeText={(t) => setBrigadas((prev) => ({ ...prev, [u.id]: t }))}
-              />
+              <SelectorBrigada valor={brigadas[u.id] ?? u.brigadaId ?? ''} alCambiar={(c) => setBrigadas((prev) => ({ ...prev, [u.id]: c }))} />
             </View>
             <TouchableOpacity style={estilos.boton} onPress={() => void asignarBrigada(u)}>
               <Text style={estilos.botonTexto}>Asignar</Text>

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Fondo } from '@/components/Fondo';
 import { MapView, Marker, Polyline } from '@/components/mapa';
 import { Alerta, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
+import { SelectorBrigada } from '@/components/SelectorBrigada';
 import { MapaOffline } from '@/components/MapaOffline';
 import { colores, fuentes } from '@/theme';
 import { crearPunto, eliminarPunto, listarPuntos, listarRutas, planificarRuta, type RutaResumen } from '@/api/vacunaguard';
@@ -157,7 +158,7 @@ export default function RutasScreen() {
               <>
                 <Boton titulo={mostrarForm ? 'Ocultar formulario' : 'Agregar punto de visita'} onPress={() => setMostrarForm(!mostrarForm)} variante={mostrarForm ? 'fantasma' : 'primario'} />
                 <Tarjeta>
-                  <Campo etiqueta="Brigada destino (ej. B-12)" value={brigadaId} onChangeText={setBrigadaId} placeholder="B-12" />
+                  <SelectorBrigada valor={brigadaId} alCambiar={setBrigadaId} etiqueta="Brigada destino de la ruta" />
                 </Tarjeta>
                 {mostrarForm ? (
                   <Tarjeta>

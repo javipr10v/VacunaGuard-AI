@@ -8,6 +8,9 @@ import { PASSWORD_HASHER } from '../../application/ports/out/password-hasher.por
 import type { PasswordHasherPort } from '../../application/ports/out/password-hasher.port';
 import { USUARIO_REPOSITORY } from '../../application/ports/out/usuario.repository.port';
 import type { UsuarioRepositoryPort } from '../../application/ports/out/usuario.repository.port';
+import { BRIGADA_REPOSITORY } from '../../application/ports/out/brigada.repository.port';
+import type { BrigadaRepositoryPort } from '../../application/ports/out/brigada.repository.port';
+import { Brigada } from '../../domain/entities/brigada.entity';
 
 const CUENTAS_DEMO = [
   {
@@ -32,11 +35,22 @@ export class DemoSeeder implements OnApplicationBootstrap {
 
   constructor(
     @Inject(USUARIO_REPOSITORY) private readonly usuarios: UsuarioRepositoryPort,
+    @Inject(BRIGADA_REPOSITORY) private readonly brigadas: BrigadaRepositoryPort,
     @Inject(PASSWORD_HASHER) private readonly hasher: PasswordHasherPort,
     @Inject(ID_GENERATOR) private readonly ids: IdGeneratorPort,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
+    // Brigadas de demostración
+    const BRIGADAS_DEMO = [
+      { clave: 'B-12', nombre: 'Brigada Centro' },
+      { clave: 'B-07', nombre: 'Brigada Sur' },
+    ];
+    for (const b of BRIGADAS_DEMO) {
+      if (await this.brigadas.buscarPorClave(b.clave)) continue;
+      await this.brigadas.guardar(new Brigada(this.ids.generar(), b.clave, b.nombre));
+      this.logger.log('Brigada creada: ' + b.clave + ' ' + b.nombre);
+    }
     for (const cuenta of CUENTAS_DEMO) {
       const email = Email.crear(cuenta.email);
       if (await this.usuarios.buscarPorEmail(email)) continue;
