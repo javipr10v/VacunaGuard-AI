@@ -1,9 +1,24 @@
 import * as SQLite from 'expo-sqlite';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
-// Base de datos local para el modo campo (offline-first)
-export const db = SQLite.openDatabaseSync('vacunaguard.db');
+// Apertura perezosa: en web el SQLite no siempre está disponible,
+// así que la app corre igual (solo sin modo campo).
+let base: SQLiteDatabase | null | undefined;
+
+export function obtenerDb(): SQLiteDatabase | null {
+  if (base === undefined) {
+    try {
+      base = SQLite.openDatabaseSync('vacunaguard.db');
+    } catch {
+      base = null;
+    }
+  }
+  return base;
+}
 
 export function iniciarBase(): void {
+  const db = obtenerDb();
+  if (!db) return;
   db.execSync(`
     PRAGMA journal_mode = WAL;
     CREATE TABLE IF NOT EXISTS cola (
