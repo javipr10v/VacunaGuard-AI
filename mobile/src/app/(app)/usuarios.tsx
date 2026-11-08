@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { Alerta, Avatar, Pildora, Tarjeta, Titulo } from '@/components/ui';
+import { Alerta, Avatar, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { SelectorBrigada } from '@/components/SelectorBrigada';
 import { colores, fuentes } from '@/theme';
-import { actualizarUsuario, listarUsuarios, type UsuarioResumen } from '@/api/vacunaguard';
+import { actualizarUsuario, eliminarUsuario, listarUsuarios, type UsuarioResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { Fondo } from '@/components/Fondo';
 
@@ -12,6 +12,9 @@ export default function UsuariosScreen() {
   const [usuarios, setUsuarios] = useState<UsuarioResumen[]>([]);
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico'; texto: string } | null>(null);
   const [brigadas, setBrigadas] = useState<Record<string, string>>({});
+  const [editando, setEditando] = useState<UsuarioResumen | null>(null);
+  const [editNombre, setEditNombre] = useState('');
+  const [editEmail, setEditEmail] = useState('');
 
   const cargar = useCallback(async () => {
     try {
@@ -36,6 +39,42 @@ export default function UsuariosScreen() {
     } catch (e) {
       setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo actualizar' });
     }
+  };
+
+  const abrirEdicion = (u: UsuarioResumen) => {
+    setEditando(u);
+    setEditNombre(u.nombre);
+    setEditEmail(u.email);
+  };
+
+  const guardarEdicion = async () => {
+    if (!editando) return;
+    try {
+      const r = await actualizarUsuario(editando.id, { nombre: editNombre.trim(), email: editEmail.trim() });
+      setUsuarios((prev) => prev.map((x) => (x.id === r.id ? r : x)));
+      setEditando(null);
+      setMensaje({ tipo: 'ok', texto: r.nombre + ' actualizado' });
+    } catch (e) {
+      setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo actualizar' });
+    }
+  };
+
+  const confirmarEliminar = (u: UsuarioResumen) => {
+    Alert.alert('Eliminar personal', '¿Eliminar la cuenta de ' + u.nombre + '? Esta acción no se puede deshacer.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: () => {
+          eliminarUsuario(u.id)
+            .then(() => {
+              setUsuarios((prev) => prev.filter((x) => x.id !== u.id));
+              setMensaje({ tipo: 'ok', texto: u.nombre + ' eliminado' });
+            })
+            .catch((e: unknown) => setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo eliminar' }));
+        },
+      },
+    ]);
   };
 
   const asignarBrigada = async (u: UsuarioResumen) => {
@@ -63,6 +102,12 @@ export default function UsuariosScreen() {
               <Text style={estilos.detalle}>{u.email}</Text>
             </View>
             <Pildora estado={u.activo ? 'NORMAL' : 'CRITICA'} />
+            <TouchableOpacity onPress={() => abrirEdicion(u)}>
+              <Text style={{ fontSize: 16 }}>✏️</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => confirmarEliminar(u)}>
+              <Text style={{ fontSize: 16 }}>🗑️</Text>
+            </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }}>
             <View style={{ flex: 1 }}>
@@ -80,6 +125,23 @@ export default function UsuariosScreen() {
           </TouchableOpacity>
         </Tarjeta>
       ))}
+      <Modal transparent visible={editando !== null} animationType="fade" onRequestClose={() => setEditando(null)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(15,23,42,0.45)', justifyContent: 'center', padding: 26 }}>
+          <View style={{ backgroundColor: colores.superficie, borderRadius: 16, padding: 14, gap: 10 }}>
+            <Text style={{ fontFamily: fuentes.medio, fontSize: 13, color: colores.texto }}>Editar a {editando?.nombre}</Text>
+            <Campo etiqueta="Nombre completo" value={editNombre} onChangeText={setEditNombre} />
+            <Campo etiqueta="Correo" value={editEmail} onChangeText={setEditEmail} autoCapitalize="none" keyboardType="email-address" />
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <Boton titulo="Cancelar" onPress={() => setEditando(null)} variante="fantasma" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Boton titulo="Guardar" onPress={guardarEdicion} deshabilitado={!editNombre.trim() || !editEmail.trim()} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
     </Fondo>
   );

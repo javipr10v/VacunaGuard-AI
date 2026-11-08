@@ -5,8 +5,8 @@ import { Rol } from '../value-objects/rol.vo';
 export class Usuario {
   constructor(
     public readonly id: string,
-    public readonly nombre: string,
-    public readonly email: Email,
+    public nombre: string,
+    public email: Email,
     private _passwordHash: string,
     private _rol: Rol,
     private _activo: boolean = true,
@@ -67,6 +67,17 @@ export class Usuario {
 
   quitarBrigada(): void {
     this._brigadaId = null;
+  }
+
+  cambiarNombre(nuevo: string): void {
+    if (!nuevo || !nuevo.trim()) {
+      throw new DomainException('El nombre es obligatorio');
+    }
+    this.nombre = nuevo.trim();
+  }
+
+  cambiarEmail(nuevo: Email): void {
+    this.email = nuevo;
   }
 
   tienePermiso(rolesPermitidos: Rol[]): boolean {

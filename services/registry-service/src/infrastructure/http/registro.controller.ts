@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { DomainException } from '../../domain/exceptions/domain.exception';
 import { RegistrarCiudadanoDto } from '../../application/dto/registrar-ciudadano.dto';
 import { RegistrarVacunacionDto } from '../../application/dto/registrar-vacunacion.dto';
 import { ConsultarCiudadanosQueryDto } from '../../application/dto/consultar-ciudadanos.query.dto';
 import { BuscarCiudadanoPorCurpUseCase } from '../../application/use-cases/buscar-ciudadano.use-case';
 import { EliminarCiudadanoUseCase } from '../../application/use-cases/eliminar-ciudadano.use-case';
+import { ActualizarCiudadanoUseCase } from '../../application/use-cases/actualizar-ciudadano.use-case';
+import { ActualizarCiudadanoDto } from '../../application/dto/actualizar-ciudadano.dto';
 import { ConsultarCiudadanoUseCase } from '../../application/use-cases/consultar-ciudadano.use-case';
 import { ListarVacunacionesUseCase } from '../../application/use-cases/listar-vacunaciones.use-case';
 import { RegistrarCiudadanoUseCase } from '../../application/use-cases/registrar-ciudadano.use-case';
@@ -25,6 +27,7 @@ export class RegistroController {
     private readonly buscarCiudadano: BuscarCiudadanoPorCurpUseCase,
     private readonly listarVacunaciones: ListarVacunacionesUseCase,
     private readonly eliminarCiudadano: EliminarCiudadanoUseCase,
+    private readonly actualizarCiudadano: ActualizarCiudadanoUseCase,
   ) {}
 
   @Get('ciudadanos')
@@ -53,6 +56,12 @@ export class RegistroController {
   @Roles('BRIGADISTA', 'ADMINISTRADOR')
   ciudadanoBaja(@Param('id') id: string) {
     return this.eliminarCiudadano.ejecutar(id);
+  }
+
+  @Patch('ciudadanos/:id')
+  @Roles('BRIGADISTA', 'ADMINISTRADOR')
+  ciudadanoEditar(@Param('id') id: string, @Body() dto: ActualizarCiudadanoDto) {
+    return this.actualizarCiudadano.ejecutar(id, dto);
   }
 
   @Post('vacunaciones')

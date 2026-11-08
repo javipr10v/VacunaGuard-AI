@@ -15,7 +15,7 @@ import type { UsuarioRepositoryPort } from './application/ports/out/usuario.repo
 import { BRIGADA_REPOSITORY } from './application/ports/out/brigada.repository.port';
 import type { BrigadaRepositoryPort } from './application/ports/out/brigada.repository.port';
 import { IniciarSesionUseCase } from './application/use-cases/iniciar-sesion.use-case';
-import { ActualizarUsuarioUseCase, ListarUsuariosUseCase } from './application/use-cases/gestion-usuarios.use-case';
+import { ActualizarUsuarioUseCase, EliminarUsuarioUseCase, ListarUsuariosUseCase } from './application/use-cases/gestion-usuarios.use-case';
 import { ActualizarBrigadaUseCase, CrearBrigadaUseCase, EliminarBrigadaUseCase, ListarBrigadasUseCase } from './application/use-cases/gestion-brigadas.use-case';
 import { RegistrarUsuarioUseCase } from './application/use-cases/registrar-usuario.use-case';
 import { AuthController } from './infrastructure/http/auth.controller';
@@ -80,6 +80,7 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
       useFactory: (r: UsuarioRepositoryPort, b: BrigadaRepositoryPort) => new ActualizarUsuarioUseCase(r, b),
       inject: [USUARIO_REPOSITORY, BRIGADA_REPOSITORY],
     },
+    { provide: EliminarUsuarioUseCase, useFactory: (r: UsuarioRepositoryPort) => new EliminarUsuarioUseCase(r), inject: [USUARIO_REPOSITORY] },
     {
       provide: CrearBrigadaUseCase,
       useFactory: (b: BrigadaRepositoryPort, i: IdGeneratorPort) => new CrearBrigadaUseCase(b, i),

@@ -5,8 +5,8 @@ export class Ciudadano {
   constructor(
     public readonly id: string,
     public readonly curp: Curp,
-    public readonly nombre: string,
-    public readonly fechaNacimiento: Date,
+    public nombre: string,
+    public fechaNacimiento: Date,
     hoy: Date = new Date(),
   ) {
     if (!nombre || !nombre.trim()) {
@@ -27,5 +27,19 @@ export class Ciudadano {
 
   edadEnAnios(en: Date = new Date()): number {
     return Math.floor(this.edadEnMeses(en) / 12);
+  }
+
+  cambiarNombre(nuevo: string): void {
+    if (!nuevo || !nuevo.trim()) {
+      throw new DomainException('El nombre es obligatorio');
+    }
+    this.nombre = nuevo.trim();
+  }
+
+  cambiarFechaNacimiento(nueva: Date): void {
+    if (Number.isNaN(nueva.getTime()) || nueva.getTime() > new Date().getTime()) {
+      throw new DomainException('La fecha de nacimiento no es válida');
+    }
+    this.fechaNacimiento = nueva;
   }
 }

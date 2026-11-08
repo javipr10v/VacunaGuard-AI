@@ -155,8 +155,14 @@ export const ubicacionesRecientes = (minutos = 5) =>
 
 export const listarUsuarios = () => peticion<UsuarioResumen[]>('identity', '/auth/usuarios');
 
-export const actualizarUsuario = (id: string, dto: { activo?: boolean; brigadaId?: string | null }) =>
+export const actualizarUsuario = (id: string, dto: { activo?: boolean; brigadaId?: string | null; nombre?: string; email?: string; rol?: string }) =>
   peticion<UsuarioResumen>('identity', '/auth/usuarios/' + id, { metodo: 'PATCH', cuerpo: dto });
+
+export const eliminarUsuario = (id: string) =>
+  peticion<{ eliminado: boolean }>('identity', '/auth/usuarios/' + id, { metodo: 'DELETE' });
+
+export const actualizarCiudadano = (id: string, dto: { nombre?: string; fechaNacimiento?: string }) =>
+  peticion<{ id: string; curp: string; nombre: string; fechaNacimiento: string; edadAnios: number }>('registry', '/ciudadanos/' + id, { metodo: 'PATCH', cuerpo: dto });
 
 export const eliminarLote = (id: string) =>
   peticion<{ eliminado: boolean }>('coldChain', '/lotes/' + id, { metodo: 'DELETE' });

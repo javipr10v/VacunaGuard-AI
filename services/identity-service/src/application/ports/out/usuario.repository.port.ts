@@ -8,4 +8,5 @@ export interface UsuarioRepositoryPort {
   buscarPorEmail(email: Email): Promise<Usuario | null>;
   buscarPorId(id: string): Promise<Usuario | null>;
   listar(): Promise<Usuario[]>;
+  eliminar(id: string): Promise<number>;
 }

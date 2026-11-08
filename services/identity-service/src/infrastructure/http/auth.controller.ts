@@ -5,7 +5,7 @@ import { RegistrarUsuarioDto } from '../../application/dto/registrar-usuario.dto
 import { ActualizarUsuarioDto } from '../../application/dto/actualizar-usuario.dto';
 import { ActualizarBrigadaDto } from '../../application/dto/actualizar-brigada.dto';
 import { CrearBrigadaDto } from '../../application/dto/crear-brigada.dto';
-import { ActualizarUsuarioUseCase, ListarUsuariosUseCase } from '../../application/use-cases/gestion-usuarios.use-case';
+import { ActualizarUsuarioUseCase, EliminarUsuarioUseCase, ListarUsuariosUseCase } from '../../application/use-cases/gestion-usuarios.use-case';
 import { ActualizarBrigadaUseCase, CrearBrigadaUseCase, EliminarBrigadaUseCase, ListarBrigadasUseCase } from '../../application/use-cases/gestion-brigadas.use-case';
 import { IniciarSesionUseCase } from '../../application/use-cases/iniciar-sesion.use-case';
 import { RegistrarUsuarioUseCase } from '../../application/use-cases/registrar-usuario.use-case';
@@ -21,6 +21,7 @@ export class AuthController {
     private readonly registrarUsuario: RegistrarUsuarioUseCase,
     private readonly listarUsuarios: ListarUsuariosUseCase,
     private readonly actualizarUsuario: ActualizarUsuarioUseCase,
+    private readonly eliminarUsuario: EliminarUsuarioUseCase,
     private readonly listarBrigadas: ListarBrigadasUseCase,
     private readonly crearBrigada: CrearBrigadaUseCase,
     private readonly actualizarBrigada: ActualizarBrigadaUseCase,
@@ -59,6 +60,13 @@ export class AuthController {
   @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
   usuario(@Param('id') id: string, @Body() dto: ActualizarUsuarioDto, @Req() req: { usuario: { rol: string } }) {
     return this.actualizarUsuario.ejecutar(id, dto, req.usuario.rol);
+  }
+
+  @Delete('usuarios/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  usuarioBaja(@Param('id') id: string, @Req() req: { usuario: { rol: string } }) {
+    return this.eliminarUsuario.ejecutar(id, req.usuario.rol);
   }
 
   @Get('brigadas')

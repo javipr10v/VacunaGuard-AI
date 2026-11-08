@@ -1,6 +1,9 @@
-import { SinPermisoException, UsuarioNoEncontradoException } from '../../domain/exceptions/usuario.exceptions';
+import { EmailDuplicadoException, SinPermisoException, UsuarioNoEncontradoException } from '../../domain/exceptions/usuario.exceptions';
 import { BrigadaNoEncontradaException } from '../../domain/exceptions/brigada.exceptions';
+import { DomainException } from '../../domain/exceptions/domain.exception';
 import type { Usuario } from '../../domain/entities/usuario.entity';
+import { Email } from '../../domain/value-objects/email.vo';
+import { Rol } from '../../domain/value-objects/rol.vo';
 import type { ActualizarUsuarioDto } from '../dto/actualizar-usuario.dto';
 import type { BrigadaRepositoryPort } from '../ports/out/brigada.repository.port';
 import type { UsuarioRepositoryPort } from '../ports/out/usuario.repository.port';
@@ -70,7 +73,46 @@ export class ActualizarUsuarioUseCase {
         usuario.quitarBrigada();
       }
     }
+    if (dto.nombre !== undefined && dto.nombre.trim() !== usuario.nombre) {
+      usuario.cambiarNombre(dto.nombre);
+    }
+    if (dto.email !== undefined && dto.email.trim().toLowerCase() !== usuario.email.valor) {
+      let nuevoEmail: Email;
+      try {
+        nuevoEmail = Email.crear(dto.email);
+      } catch (e) {
+        if (e instanceof DomainException) throw new DomainException('El correo no es válido');
+        throw e;
+      }
+      if (await this.usuarios.buscarPorEmail(nuevoEmail)) {
+        throw new EmailDuplicadoException();
+      }
+      usuario.cambiarEmail(nuevoEmail);
+    }
+    if (dto.rol !== undefined && dto.rol !== usuario.rol) {
+      if (rolSolicitante !== 'ADMINISTRADOR') {
+        throw new SinPermisoException('Solo el administrador puede cambiar el rol');
+      }
+      usuario.cambiarRol(dto.rol as Rol);
+    }
     await this.usuarios.guardar(usuario);
     return resumir(usuario);
+  }
+}
+
+export class EliminarUsuarioUseCase {
+  constructor(private readonly usuarios: UsuarioRepositoryPort) {}
+
+  async ejecutar(id: string, rolSolicitante: string): Promise<{ eliminado: boolean }> {
+    const usuario = await this.usuarios.buscarPorId(id);
+    if (!usuario) throw new UsuarioNoEncontradoException();
+    if (usuario.rol === 'ADMINISTRADOR') {
+      throw new SinPermisoException('No se puede eliminar una cuenta de administrador');
+    }
+    if (rolSolicitante === 'COORDINADOR' && usuario.rol !== 'BRIGADISTA') {
+      throw new SinPermisoException('El coordinador solo puede eliminar brigadistas');
+    }
+    await this.usuarios.eliminar(id);
+    return { eliminado: true };
   }
 }

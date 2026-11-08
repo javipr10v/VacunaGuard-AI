@@ -41,6 +41,11 @@ export class TypeOrmUsuarioRepository implements UsuarioRepositoryPort {
     return filas.map((f) => this.aDominio(f));
   }
 
+  async eliminar(id: string): Promise<number> {
+    const r = await this.repo.delete({ id });
+    return Number(r.affected ?? 0);
+  }
+
   private aDominio(f: UsuarioOrmEntity): Usuario {
     return new Usuario(
       f.id,

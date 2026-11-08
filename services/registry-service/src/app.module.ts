@@ -16,6 +16,7 @@ import type { RegistroRepositoryPort } from './application/ports/out/registro.re
 import { BuscarCiudadanoPorCurpUseCase } from './application/use-cases/buscar-ciudadano.use-case';
 import { ConsultarCiudadanoUseCase } from './application/use-cases/consultar-ciudadano.use-case';
 import { EliminarCiudadanoUseCase } from './application/use-cases/eliminar-ciudadano.use-case';
+import { ActualizarCiudadanoUseCase } from './application/use-cases/actualizar-ciudadano.use-case';
 import { ListarVacunacionesUseCase } from './application/use-cases/listar-vacunaciones.use-case';
 import { RegistrarCiudadanoUseCase } from './application/use-cases/registrar-ciudadano.use-case';
 import { RegistrarVacunacionUseCase } from './application/use-cases/registrar-vacunacion.use-case';
@@ -66,6 +67,7 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
         new EliminarCiudadanoUseCase(c, r),
       inject: [CIUDADANO_REPOSITORY, REGISTRO_REPOSITORY],
     },
+    { provide: ActualizarCiudadanoUseCase, useFactory: (c: CiudadanoRepositoryPort) => new ActualizarCiudadanoUseCase(c), inject: [CIUDADANO_REPOSITORY] },
     {
       provide: ConsultarCiudadanoUseCase,
       useFactory: (c: CiudadanoRepositoryPort) => new ConsultarCiudadanoUseCase(c),

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Alerta, Avatar, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
-import { buscarCiudadano, eliminarCiudadano, listarLotes, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type LoteResumen, type VacunacionResumen } from '@/api/vacunaguard';
+import { actualizarCiudadano, buscarCiudadano, eliminarCiudadano, listarLotes, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type LoteResumen, type VacunacionResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useSync } from '@/context/SyncContext';
 import { useAuth } from '@/context/AuthContext';
@@ -18,6 +18,9 @@ export default function VacunarScreen() {
   const [menuLote, setMenuLote] = useState(false);
   const [dosis, setDosis] = useState('');
   const [historial, setHistorial] = useState<VacunacionResumen[]>([]);
+  const [editandoCiudadano, setEditandoCiudadano] = useState(false);
+  const [editNombre, setEditNombre] = useState('');
+  const [editFecha, setEditFecha] = useState('');
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico'; texto: string } | null>(null);
   const [cargando, setCargando] = useState(false);
 
@@ -72,6 +75,28 @@ export default function VacunarScreen() {
     ]);
   };
 
+  const abrirEdicionCiudadano = () => {
+    if (!ciudadano) return;
+    setEditNombre(ciudadano.nombre);
+    setEditFecha('');
+    setEditandoCiudadano(true);
+  };
+
+  const guardarEdicionCiudadano = async () => {
+    if (!ciudadano) return;
+    try {
+      const r = await actualizarCiudadano(ciudadano.id, {
+        nombre: editNombre.trim(),
+        ...(editFecha.trim() ? { fechaNacimiento: editFecha.trim() } : {}),
+      });
+      setCiudadano({ ...ciudadano, nombre: r.nombre, edadAnios: r.edadAnios });
+      setEditandoCiudadano(false);
+      setMensaje({ tipo: 'ok', texto: 'Ciudadano actualizado' });
+    } catch (e) {
+      setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo actualizar' });
+    }
+  };
+
   const aplicar = async () => {
     if (!ciudadano) return;
     setMensaje(null);
@@ -118,6 +143,9 @@ export default function VacunarScreen() {
                 <Text style={estilos.nombre}>{ciudadano.nombre}</Text>
                 <Text style={estilos.detalle}>{ciudadano.edadAnios} años · CURP {ciudadano.curp}</Text>
               </View>
+              <TouchableOpacity onPress={abrirEdicionCiudadano}>
+                <Text style={{ fontSize: 16 }}>✏️</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={confirmarEliminar}>
                 <Text style={{ fontSize: 16 }}>🗑️</Text>
               </TouchableOpacity>
@@ -177,6 +205,23 @@ export default function VacunarScreen() {
         </>
       ) : null}
       {mensaje ? <Alerta tipo={mensaje.tipo} titulo={mensaje.texto} /> : null}
+      <Modal transparent visible={editandoCiudadano} animationType="fade" onRequestClose={() => setEditandoCiudadano(false)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(15,23,42,0.45)', justifyContent: 'center', padding: 26 }}>
+          <View style={{ backgroundColor: colores.superficie, borderRadius: 16, padding: 14, gap: 10 }}>
+            <Text style={estilos.nombre}>Editar datos del ciudadano</Text>
+            <Campo etiqueta="Nombre completo" value={editNombre} onChangeText={setEditNombre} />
+            <Campo etiqueta="Fecha de nacimiento (AAAA-MM-DD, opcional)" value={editFecha} onChangeText={setEditFecha} placeholder="2020-06-15" />
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <Boton titulo="Cancelar" onPress={() => setEditandoCiudadano(false)} variante="fantasma" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Boton titulo="Guardar" onPress={guardarEdicionCiudadano} deshabilitado={!editNombre.trim()} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
