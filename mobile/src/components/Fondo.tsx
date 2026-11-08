@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, View } from 'react-native';
 
 export function Fondo({ children }: { children: ReactNode }) {
   return (
-    <ImageBackground source={require('../assets/login-bg.jpg')} style={estilos.fondo} resizeMode="cover">
+    <ImageBackground source={require('../../assets/login-bg.jpg')} style={estilos.fondo} resizeMode="cover">
       <View style={estilos.velo}>{children}</View>
     </ImageBackground>
   );
