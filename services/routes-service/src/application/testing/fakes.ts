@@ -45,6 +45,7 @@ export class UbicacionesMemoria implements UbicacionRepositoryPort {
     this.items.push(u);
   }
   async recientes(minutos: number) {
+    if (minutos <= 0) return [...this.items];
     const limite = Date.now() - minutos * 60_000;
     return this.items.filter((u) => u.fecha.getTime() >= limite);
   }

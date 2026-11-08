@@ -27,10 +27,12 @@ export class TypeOrmUbicacionRepository implements UbicacionRepositoryPort {
   }
 
   async recientes(minutos: number): Promise<UbicacionBrigadista[]> {
-    const filas: FilaUbicacion[] = await this.ds.query(
-      'SELECT id, brigadista_id, nombre, brigada_id, ST_Y(ubicacion::geometry) AS latitud, ST_X(ubicacion::geometry) AS longitud, creado_en FROM ubicaciones_brigadista WHERE creado_en >= now() - make_interval(mins => $1) ORDER BY creado_en DESC',
-      [minutos],
-    );
+    const sql = minutos > 0
+      ? 'SELECT id, brigadista_id, nombre, brigada_id, ST_Y(ubicacion::geometry) AS latitud, ST_X(ubicacion::geometry) AS longitud, creado_en FROM ubicaciones_brigadista WHERE creado_en >= now() - make_interval(mins => $1) ORDER BY creado_en DESC LIMIT 500'
+      : 'SELECT id, brigadista_id, nombre, brigada_id, ST_Y(ubicacion::geometry) AS latitud, ST_X(ubicacion::geometry) AS longitud, creado_en FROM ubicaciones_brigadista ORDER BY creado_en DESC LIMIT 500';
+    const filas: FilaUbicacion[] = minutos > 0
+      ? await this.ds.query(sql, [minutos])
+      : await this.ds.query(sql);
     return filas.map(
       (f) =>
         new UbicacionBrigadista(

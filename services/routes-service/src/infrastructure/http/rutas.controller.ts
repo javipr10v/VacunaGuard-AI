@@ -76,6 +76,7 @@ export class RutasController {
   @Roles('ADMINISTRADOR', 'COORDINADOR')
   ubicaciones(@Query('minutos') minutos?: string) {
     const n = Number(minutos);
-    return this.listarUbicaciones.ejecutar(Number.isFinite(n) && n > 0 ? n : 5);
+    // 0 = sin límite de tiempo (última posición conocida de cada brigadista)
+    return this.listarUbicaciones.ejecutar(Number.isFinite(n) && n >= 0 ? n : 5);
   }
 }
