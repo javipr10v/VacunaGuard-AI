@@ -3,11 +3,11 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Fondo } from '@/components/Fondo';
-import MapView, { Marker, Polyline } from 'react-native-maps';
-import { Alerta, Boton, Pildora, Tarjeta, Titulo } from '@/components/ui';
+import { MapView, Marker, Polyline } from '@/components/mapa';
+import { Alerta, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { MapaOffline } from '@/components/MapaOffline';
 import { colores, fuentes } from '@/theme';
-import { eliminarPunto, listarPuntos, listarRutas, planificarRuta, type RutaResumen } from '@/api/vacunaguard';
+import { crearPunto, eliminarPunto, listarPuntos, listarRutas, planificarRuta, type RutaResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { guardarPuntos, guardarRuta, leerPuntos, leerRuta, type PuntoLocal, type RutaLocal } from '@/storage/cola';
 import { useSync } from '@/context/SyncContext';
@@ -22,6 +22,30 @@ export default function RutasScreen() {
   const [puntos, setPuntos] = useState<PuntoLocal[]>([]);
   const [ruta, setRuta] = useState<RutaLocal | null>(null);
   const [mensaje, setMensaje] = useState('');
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [nombreP, setNombreP] = useState('');
+  const [latP, setLatP] = useState('');
+  const [lonP, setLonP] = useState('');
+  const [persP, setPersP] = useState('');
+
+  const guardarPunto = async () => {
+    try {
+      const p = await crearPunto({
+        nombre: nombreP.trim(),
+        latitud: Number(latP),
+        longitud: Number(lonP),
+        personasEstimadas: Number(persP) || 0,
+      });
+      const locales = [...puntos, { id: p.id, nombre: p.nombre, latitud: p.latitud, longitud: p.longitud, personas: p.personasEstimadas }];
+      setPuntos(locales);
+      guardarPuntos(locales);
+      setNombreP(''); setLatP(''); setLonP(''); setPersP('');
+      setMostrarForm(false);
+      setMensaje('Punto agregado: ' + p.nombre);
+    } catch (e) {
+      setMensaje(e instanceof ErrorApi ? e.message : 'No se pudo guardar el punto');
+    }
+  };
 
   const aLocal = (r: RutaResumen): RutaLocal => ({
     id: r.id,
@@ -115,6 +139,7 @@ export default function RutasScreen() {
         <Titulo texto={esBrigadista ? 'Mi ruta' : 'Asignar ruta'} sub={esBrigadista ? 'Ruta de la brigada' : 'Orden óptimo de paradas'} />
         {enLinea ? (
           <>
+            {MapView ? (
             <View style={estilos.mapa}>
               <MapView style={{ flex: 1 }} initialRegion={{ ...TUZTLA, latitudeDelta: 0.35, longitudeDelta: 0.35 }}>
                 {puntos.map((p) => (
@@ -124,8 +149,23 @@ export default function RutasScreen() {
                 <Marker coordinate={TUZTLA} title="Origen" pinColor={colores.primario700} />
               </MapView>
             </View>
+            ) : (
+              <MapaOffline puntos={puntos} ruta={ruta} />
+            )}
             {!esBrigadista ? (
-              <Boton titulo={'Planificar ruta con ' + puntos.length + ' puntos'} onPress={planificar} deshabilitado={puntos.length === 0} />
+              <>
+                <Boton titulo={mostrarForm ? 'Ocultar formulario' : 'Agregar punto de visita'} onPress={() => setMostrarForm(!mostrarForm)} variante={mostrarForm ? 'fantasma' : 'primario'} />
+                {mostrarForm ? (
+                  <Tarjeta>
+                    <Campo etiqueta="Nombre del punto (ej. Pichucalco, Tapachula…)" value={nombreP} onChangeText={setNombreP} placeholder="Tapachula" />
+                    <Campo etiqueta="Latitud" value={latP} onChangeText={setLatP} keyboardType="decimal-pad" placeholder="14.9100" />
+                    <Campo etiqueta="Longitud" value={lonP} onChangeText={setLonP} keyboardType="decimal-pad" placeholder="-92.2641" />
+                    <Campo etiqueta="Personas estimadas" value={persP} onChangeText={setPersP} keyboardType="number-pad" placeholder="30" />
+                    <Boton titulo="Guardar punto" onPress={guardarPunto} deshabilitado={!nombreP.trim() || !latP.trim() || !lonP.trim()} />
+                  </Tarjeta>
+                ) : null}
+                <Boton titulo={'Planificar ruta con ' + puntos.length + ' puntos'} onPress={planificar} deshabilitado={puntos.length === 0} />
+              </>
             ) : null}
             {mensaje ? <Alerta tipo="advertencia" titulo={mensaje} /> : null}
           </>

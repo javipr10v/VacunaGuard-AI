@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { MapView, Marker } from '@/components/mapa';
 import * as Location from 'expo-location';
 import { io, type Socket } from 'socket.io-client';
 import { base, ErrorApi } from '@/api/client';
@@ -79,6 +79,7 @@ export default function GpsScreen() {
   return (
     <ScrollView style={estilos.fondo} contentContainerStyle={estilos.contenido}>
       <Titulo texto="GPS en vivo" sub={usuario?.rol === 'BRIGADISTA' ? 'Transmite tu posición' : 'Vista del coordinador'} />
+      {MapView ? (
       <View style={estilos.mapa}>
         <MapView style={{ flex: 1 }} initialRegion={{ latitude: 16.7528, longitude: -93.1152, latitudeDelta: 0.4, longitudeDelta: 0.4 }}>
           {marcadores.map((u) => (
@@ -87,6 +88,11 @@ export default function GpsScreen() {
           {miPosicion ? <Marker coordinate={{ latitude: miPosicion.latitud, longitude: miPosicion.longitud }} title="Yo" pinColor={colores.critico} /> : null}
         </MapView>
       </View>
+      ) : (
+      <Tarjeta>
+        <Text style={estilos.detalle}>El mapa en vivo está disponible en la app móvil. Aquí puedes ver la lista de brigadistas.</Text>
+      </Tarjeta>
+      )}
       {usuario?.rol === 'BRIGADISTA' ? (
         <Boton titulo={transmitiendo ? 'Detener transmisión' : 'Transmitir mi ubicación'} onPress={alternar} variante={transmitiendo ? 'fantasma' : 'primario'} />
       ) : null}

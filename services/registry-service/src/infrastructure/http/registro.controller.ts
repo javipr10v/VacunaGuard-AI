@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { DomainException } from '../../domain/exceptions/domain.exception';
 import { RegistrarCiudadanoDto } from '../../application/dto/registrar-ciudadano.dto';
 import { RegistrarVacunacionDto } from '../../application/dto/registrar-vacunacion.dto';
 import { ConsultarCiudadanosQueryDto } from '../../application/dto/consultar-ciudadanos.query.dto';
 import { BuscarCiudadanoPorCurpUseCase } from '../../application/use-cases/buscar-ciudadano.use-case';
+import { EliminarCiudadanoUseCase } from '../../application/use-cases/eliminar-ciudadano.use-case';
 import { ConsultarCiudadanoUseCase } from '../../application/use-cases/consultar-ciudadano.use-case';
 import { ListarVacunacionesUseCase } from '../../application/use-cases/listar-vacunaciones.use-case';
 import { RegistrarCiudadanoUseCase } from '../../application/use-cases/registrar-ciudadano.use-case';
@@ -23,6 +24,7 @@ export class RegistroController {
     private readonly consultarCiudadano: ConsultarCiudadanoUseCase,
     private readonly buscarCiudadano: BuscarCiudadanoPorCurpUseCase,
     private readonly listarVacunaciones: ListarVacunacionesUseCase,
+    private readonly eliminarCiudadano: EliminarCiudadanoUseCase,
   ) {}
 
   @Get('ciudadanos')
@@ -45,6 +47,12 @@ export class RegistroController {
   @Post('ciudadanos')
   ciudadanoAlta(@Body() dto: RegistrarCiudadanoDto) {
     return this.registrarCiudadano.ejecutar(dto);
+  }
+
+  @Delete('ciudadanos/:id')
+  @Roles('BRIGADISTA', 'ADMINISTRADOR')
+  ciudadanoBaja(@Param('id') id: string) {
+    return this.eliminarCiudadano.ejecutar(id);
   }
 
   @Post('vacunaciones')

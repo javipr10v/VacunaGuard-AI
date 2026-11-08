@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import { iniciarSesion, type ResultadoSesion, type UsuarioResumen } from '../api/vacunaguard';
 import { guardarToken, borrarToken } from '../api/client';
+import { borrarSeguro, guardarSeguro, leerSeguro } from '@/storage/seguro';
 
 interface EstadoAuth {
   token: string | null;
@@ -27,8 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const t = await SecureStore.getItemAsync('vg_token');
-        const u = await SecureStore.getItemAsync('vg_usuario');
+        const t = await leerSeguro('vg_token');
+        const u = await leerSeguro('vg_usuario');
         if (t) setToken(t);
         if (u) setUsuario(JSON.parse(u) as UsuarioResumen);
       } catch {
@@ -42,14 +42,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const entrar = async (email: string, password: string) => {
     const r: ResultadoSesion = await iniciarSesion(email, password);
     await guardarToken(r.accessToken);
-    await SecureStore.setItemAsync('vg_usuario', JSON.stringify(r.usuario));
+    await guardarSeguro('vg_usuario', JSON.stringify(r.usuario));
     setToken(r.accessToken);
     setUsuario(r.usuario);
   };
 
   const salir = async () => {
     await borrarToken();
-    await SecureStore.deleteItemAsync('vg_usuario');
+    await borrarSeguro('vg_usuario');
     setToken(null);
     setUsuario(null);
   };

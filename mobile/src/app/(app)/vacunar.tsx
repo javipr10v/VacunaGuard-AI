@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Alerta, Avatar, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
-import { buscarCiudadano, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type VacunacionResumen } from '@/api/vacunaguard';
+import { buscarCiudadano, eliminarCiudadano, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type VacunacionResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useSync } from '@/context/SyncContext';
 import { useAuth } from '@/context/AuthContext';
@@ -38,6 +38,26 @@ export default function VacunarScreen() {
     } finally {
       setCargando(false);
     }
+  };
+
+  const confirmarEliminar = () => {
+    if (!ciudadano) return;
+    Alert.alert('Eliminar ciudadano', '¿Seguro que quieres eliminar a ' + ciudadano.nombre + '? Se borrarán también sus dosis registradas.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: () => {
+          eliminarCiudadano(ciudadano.id)
+            .then(() => {
+              setMensaje({ tipo: 'ok', texto: 'Ciudadano eliminado' });
+              setCiudadano(null);
+              setHistorial([]);
+            })
+            .catch((e: unknown) => setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo eliminar' }));
+        },
+      },
+    ]);
   };
 
   const aplicar = async () => {
@@ -85,6 +105,9 @@ export default function VacunarScreen() {
                 <Text style={estilos.nombre}>{ciudadano.nombre}</Text>
                 <Text style={estilos.detalle}>{ciudadano.edadAnios} años · CURP {ciudadano.curp}</Text>
               </View>
+              <TouchableOpacity onPress={confirmarEliminar}>
+                <Text style={{ fontSize: 16 }}>🗑️</Text>
+              </TouchableOpacity>
             </View>
           </Tarjeta>
           <Tarjeta>

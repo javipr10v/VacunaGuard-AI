@@ -7,4 +7,5 @@ export interface CiudadanoRepositoryPort {
   guardar(ciudadano: Ciudadano): Promise<void>;
   buscarPorCurp(curp: Curp): Promise<Ciudadano | null>;
   buscarPorId(id: string): Promise<Ciudadano | null>;
+  eliminar(id: string): Promise<number>;
 }

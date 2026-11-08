@@ -17,6 +17,9 @@ export class CiudadanosMemoria implements CiudadanoRepositoryPort {
   async buscarPorId(id: string) {
     return this.items.get(id) ?? null;
   }
+  async eliminar(id: string) {
+    return this.items.delete(id) ? 1 : 0;
+  }
 }
 
 export class RegistrosMemoria implements RegistroRepositoryPort {
@@ -34,6 +37,11 @@ export class RegistrosMemoria implements RegistroRepositoryPort {
   }
   async listarPorCiudadano(ciudadanoId: string) {
     return this.items.filter((r) => r.ciudadanoId === ciudadanoId);
+  }
+  async eliminarPorCiudadano(ciudadanoId: string) {
+    const antes = this.items.length;
+    this.items = this.items.filter((r) => r.ciudadanoId !== ciudadanoId);
+    return antes - this.items.length;
   }
 }
 

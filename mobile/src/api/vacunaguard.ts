@@ -110,6 +110,9 @@ export const buscarCiudadano = (curp: string) =>
 export const consultarCiudadano = (id: string) =>
   peticion<ConsultaCiudadanoResumen>('registry', '/ciudadanos/' + id);
 
+export const eliminarCiudadano = (id: string) =>
+  peticion<{ eliminado: boolean }>('registry', '/ciudadanos/' + id, { metodo: 'DELETE' });
+
 export const vacunacionesDe = (id: string) =>
   peticion<VacunacionResumen[]>('registry', '/ciudadanos/' + id + '/vacunaciones');
 

@@ -51,7 +51,7 @@ export default function UsuariosScreen() {
   return (
     <Fondo>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
-      <Titulo texto="Brigadistas y personal" sub="Activar, desactivar y asignar brigada" />
+      <Titulo texto="Personal" sub="Activar, desactivar y asignar brigada" />
       {mensaje ? <Alerta tipo={mensaje.tipo} titulo={mensaje.texto} /> : null}
       {usuarios.map((u) => (
         <Tarjeta key={u.id}>

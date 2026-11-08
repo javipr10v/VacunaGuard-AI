@@ -29,6 +29,11 @@ export class TypeOrmRegistroRepository implements RegistroRepositoryPort {
     return (await this.repo.count({ where: { ciudadanoId, vacuna, numeroDosis } })) > 0;
   }
 
+  async eliminarPorCiudadano(ciudadanoId: string): Promise<number> {
+    const r = await this.repo.delete({ ciudadanoId });
+    return Number(r.affected ?? 0);
+  }
+
   async listarPorCiudadano(ciudadanoId: string): Promise<RegistroVacunacion[]> {
     const filas = await this.repo.find({
       where: { ciudadanoId },

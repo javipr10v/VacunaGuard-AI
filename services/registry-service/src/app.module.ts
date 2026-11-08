@@ -15,6 +15,7 @@ import { REGISTRO_REPOSITORY } from './application/ports/out/registro.repository
 import type { RegistroRepositoryPort } from './application/ports/out/registro.repository.port';
 import { BuscarCiudadanoPorCurpUseCase } from './application/use-cases/buscar-ciudadano.use-case';
 import { ConsultarCiudadanoUseCase } from './application/use-cases/consultar-ciudadano.use-case';
+import { EliminarCiudadanoUseCase } from './application/use-cases/eliminar-ciudadano.use-case';
 import { ListarVacunacionesUseCase } from './application/use-cases/listar-vacunaciones.use-case';
 import { RegistrarCiudadanoUseCase } from './application/use-cases/registrar-ciudadano.use-case';
 import { RegistrarVacunacionUseCase } from './application/use-cases/registrar-vacunacion.use-case';
@@ -59,6 +60,12 @@ import { UuidGenerator } from './infrastructure/security/uuid-generator';
     { provide: EVENT_PUBLISHER, useClass: RabbitMqEventPublisherAdapter },
     { provide: CIUDADANO_REPOSITORY, useClass: TypeOrmCiudadanoRepository },
     { provide: REGISTRO_REPOSITORY, useClass: TypeOrmRegistroRepository },
+    {
+      provide: EliminarCiudadanoUseCase,
+      useFactory: (c: CiudadanoRepositoryPort, r: RegistroRepositoryPort) =>
+        new EliminarCiudadanoUseCase(c, r),
+      inject: [CIUDADANO_REPOSITORY, REGISTRO_REPOSITORY],
+    },
     {
       provide: ConsultarCiudadanoUseCase,
       useFactory: (c: CiudadanoRepositoryPort) => new ConsultarCiudadanoUseCase(c),

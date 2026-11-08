@@ -41,6 +41,11 @@ export class TypeOrmCiudadanoRepository implements CiudadanoRepositoryPort {
     return fila ? this.aDominio(fila) : null;
   }
 
+  async eliminar(id: string): Promise<number> {
+    const r = await this.repo.delete({ id });
+    return Number(r.affected ?? 0);
+  }
+
   private aDominio(f: CiudadanoOrmEntity): Ciudadano {
     const [anio, mes, dia] = f.fechaNacimiento.split('-').map(Number);
     return new Ciudadano(

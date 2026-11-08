@@ -6,4 +6,5 @@ export interface RegistroRepositoryPort {
   guardar(registro: RegistroVacunacion): Promise<void>;
   existeDosis(ciudadanoId: string, vacuna: string, numeroDosis: number): Promise<boolean>;
   listarPorCiudadano(ciudadanoId: string): Promise<RegistroVacunacion[]>;
+  eliminarPorCiudadano(ciudadanoId: string): Promise<number>;
 }

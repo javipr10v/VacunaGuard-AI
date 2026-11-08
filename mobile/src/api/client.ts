@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import * as SecureStore from 'expo-secure-store';
+import { borrarSeguro, guardarSeguro, leerSeguro } from '@/storage/seguro';
 
 const PUERTOS = { identity: 3001, coldChain: 3002, registry: 3003, routes: 3004, advisor: 3005 } as const;
 export type Servicio = keyof typeof PUERTOS;
@@ -17,15 +17,15 @@ export function base(servicio: Servicio): string {
 }
 
 export async function obtenerToken(): Promise<string | null> {
-  return SecureStore.getItemAsync('vg_token');
+  return leerSeguro('vg_token');
 }
 
 export async function guardarToken(t: string): Promise<void> {
-  await SecureStore.setItemAsync('vg_token', t);
+  await guardarSeguro('vg_token', t);
 }
 
 export async function borrarToken(): Promise<void> {
-  await SecureStore.deleteItemAsync('vg_token');
+  await borrarSeguro('vg_token');
 }
 
 export class ErrorApi extends Error {}
