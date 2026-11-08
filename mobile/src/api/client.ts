@@ -51,6 +51,7 @@ export async function peticion<T>(
     throw new ErrorApi('No se pudo conectar con el servidor (' + base(servicio) + ')');
   }
   if (respuesta.status === 401) throw new ErrorApi('Sesión expirada');
+  if (respuesta.status === 429) throw new ErrorApi('Demasiados intentos · espera un minuto e inténtalo de nuevo');
   if (!respuesta.ok) {
     let detalle = '';
     try {

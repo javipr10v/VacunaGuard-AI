@@ -11,5 +11,5 @@ export function Fondo({ children }: { children: ReactNode }) {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1 },
-  velo: { flex: 1, backgroundColor: 'rgba(244,247,251,0.9)' },
+  velo: { flex: 1, backgroundColor: 'rgba(214,236,252,0.82)' },
 });

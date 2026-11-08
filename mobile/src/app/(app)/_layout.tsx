@@ -6,6 +6,8 @@ const headerAzul = {
   headerStyle: { backgroundColor: colores.superficie },
   headerTintColor: colores.primario700,
   headerTitleStyle: { fontFamily: 'Manrope_700Bold', fontSize: 16 },
+  headerBackTitle: '',
+  headerBackButtonDisplayMode: 'minimal' as const,
 };
 
 export default function AppLayout() {

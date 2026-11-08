@@ -46,14 +46,14 @@ export default function PanelScreen() {
     ],
     COORDINADOR: [
       { icono: 'map-outline', etiqueta: 'Asignar ruta', ruta: '/rutas' },
-      { icono: 'people-outline', etiqueta: 'Brigadistas', ruta: '/usuarios' },
+      { icono: 'people-outline', etiqueta: 'Personal', ruta: '/usuarios' },
       { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },
       { icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' },
       { icono: 'chatbubbles-outline', etiqueta: 'Protocolos IA', ruta: '/protocolos' },
       { icono: 'navigate-outline', etiqueta: 'Ubicaciones', ruta: '/gps' },
     ],
     ADMINISTRADOR: [
-      { icono: 'people-outline', etiqueta: 'Brigadistas', ruta: '/usuarios' },
+      { icono: 'people-outline', etiqueta: 'Personal', ruta: '/usuarios' },
       { icono: 'person-add-outline', etiqueta: 'Nuevo brigadista', ruta: '/nuevo-usuario' },
       { icono: 'cube-outline', etiqueta: 'Nuevo lote', ruta: '/nuevo-lote' },
       { icono: 'snow-outline', etiqueta: 'Red de frío', ruta: '/red-frio' },

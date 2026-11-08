@@ -30,9 +30,12 @@ export class EsquemaRoutes implements OnModuleInit {
       `CREATE TABLE IF NOT EXISTS ruta_paradas (
         ruta_id uuid NOT NULL REFERENCES rutas(id) ON DELETE CASCADE,
         orden integer NOT NULL,
-        punto_id uuid NOT NULL REFERENCES puntos_visita(id),
+        punto_id uuid NOT NULL REFERENCES puntos_visita(id) ON DELETE CASCADE,
         PRIMARY KEY (ruta_id, orden)
       )`,
+      // Migra bases existentes al borrado en cascada
+      'ALTER TABLE ruta_paradas DROP CONSTRAINT IF EXISTS ruta_paradas_punto_id_fkey',
+      'ALTER TABLE ruta_paradas ADD CONSTRAINT ruta_paradas_punto_id_fkey FOREIGN KEY (punto_id) REFERENCES puntos_visita(id) ON DELETE CASCADE',
       `CREATE TABLE IF NOT EXISTS alertas_stock (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
         vacuna varchar(80) NOT NULL,

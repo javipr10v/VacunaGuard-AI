@@ -22,7 +22,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   login(@Body() dto: IniciarSesionDto) {
     return this.iniciarSesion.ejecutar(dto);
   }
