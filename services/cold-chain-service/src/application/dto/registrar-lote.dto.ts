@@ -33,4 +33,9 @@ export class RegistrarLoteDto {
   @Min(0)
   @Max(1000000)
   umbralStockBajo?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  hieleraId?: string;
 }

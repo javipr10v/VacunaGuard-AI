@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Alerta, Avatar, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
-import { buscarCiudadano, eliminarCiudadano, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type VacunacionResumen } from '@/api/vacunaguard';
+import { buscarCiudadano, eliminarCiudadano, listarLotes, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type LoteResumen, type VacunacionResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useSync } from '@/context/SyncContext';
 import { useAuth } from '@/context/AuthContext';
@@ -14,14 +14,26 @@ export default function VacunarScreen() {
   const [ciudadano, setCiudadano] = useState<ConsultaCiudadanoResumen | null>(null);
   const [vacuna, setVacuna] = useState('');
   const [lote, setLote] = useState('');
+  const [lotes, setLotes] = useState<LoteResumen[]>([]);
+  const [menuLote, setMenuLote] = useState(false);
   const [dosis, setDosis] = useState('');
   const [historial, setHistorial] = useState<VacunacionResumen[]>([]);
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico'; texto: string } | null>(null);
   const [cargando, setCargando] = useState(false);
 
+  const refrescarLotes = async () => {
+    try {
+      const ls = await listarLotes();
+      setLotes(ls);
+    } catch {
+      // sin conexión: se mantiene la lista anterior
+    }
+  };
+
   const buscar = async () => {
     setMensaje(null);
     setCargando(true);
+    void refrescarLotes();
     try {
       const r = await buscarCiudadano(curp.trim().toUpperCase());
       if ('encontrado' in r && !r.encontrado) {
@@ -69,6 +81,7 @@ export default function VacunarScreen() {
       setMensaje({ tipo: 'ok', texto: 'Dosis registrada · el stock del lote se actualizó' });
       const h = await vacunacionesDe(ciudadano.id);
       setHistorial(h);
+      void refrescarLotes();
     } catch (e) {
       if (e instanceof ErrorApi && e.message.startsWith('No se pudo conectar') && ciudadano) {
         encolarRegistro('vacunacion', { ciudadanoId: ciudadano.id, vacuna: vacuna.trim(), lote: lote.trim(), numeroDosis: Number(dosis) });
@@ -111,11 +124,43 @@ export default function VacunarScreen() {
             </View>
           </Tarjeta>
           <Tarjeta>
-            <Campo etiqueta="Vacuna" value={vacuna} onChangeText={setVacuna} placeholder="SRP" />
-            <Campo etiqueta="Lote" value={lote} onChangeText={setLote} placeholder="L-DEMO-22" />
+            <Text style={estilos.etiqueta}>Vacuna y lote a aplicar</Text>
+            <TouchableOpacity style={estilos.campoLote} onPress={() => setMenuLote(true)}>
+              <Text style={[estilos.campoLoteTexto, !lote ? { color: '#94a3b8' } : null]}>
+                {lote ? '💉 ' + vacuna + ' · ' + lote + ' · quedan ' + (lotes.find((x) => x.numeroLote === lote)?.cantidad ?? '—') : 'Elige del inventario…'}
+              </Text>
+              <Text style={estilos.flecha}>▾</Text>
+            </TouchableOpacity>
             <Campo etiqueta="Número de dosis" value={dosis} onChangeText={setDosis} keyboardType="number-pad" placeholder="2" />
             <Boton titulo="Aplicar y registrar" onPress={aplicar} cargando={cargando} deshabilitado={!vacuna.trim() || !lote.trim() || !dosis.trim()} />
           </Tarjeta>
+          <Modal transparent visible={menuLote} animationType="fade" onRequestClose={() => setMenuLote(false)}>
+            <TouchableOpacity style={estilos.fondoModal} activeOpacity={1} onPress={() => setMenuLote(false)}>
+              <View style={estilos.menu}>
+                <Text style={estilos.tituloMenu}>Inventario de la red de frío</Text>
+                <ScrollView style={{ maxHeight: 320 }}>
+                  {lotes
+                    .filter((l) => !l.caducado && l.cantidad > 0)
+                    .map((l) => (
+                      <TouchableOpacity
+                        key={l.id}
+                        style={[estilos.opcion, l.numeroLote === lote ? estilos.opcionActiva : null]}
+                        onPress={() => {
+                          setVacuna(l.vacuna);
+                          setLote(l.numeroLote);
+                          setMenuLote(false);
+                        }}
+                      >
+                        <Text style={estilos.opcionTexto}>💉 {l.vacuna} · {l.numeroLote} · {l.hieleraId ? '🧊 ' + l.hieleraId + ' · ' : ''}quedan {l.cantidad}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  {lotes.filter((l) => !l.caducado && l.cantidad > 0).length === 0 ? (
+                    <Text style={estilos.vacio}>No hay lotes con stock disponible</Text>
+                  ) : null}
+                </ScrollView>
+              </View>
+            </TouchableOpacity>
+          </Modal>
           <Tarjeta>
             <Text style={estilos.nombre}>Historial de dosis</Text>
             {historial.length === 0 ? (
@@ -141,4 +186,15 @@ const estilos = StyleSheet.create({
   contenido: { padding: 18, gap: 11 },
   nombre: { fontFamily: fuentes.medio, fontSize: 14, color: colores.texto },
   detalle: { fontFamily: fuentes.cuerpo, fontSize: 12, color: colores.mutado },
+  etiqueta: { fontSize: 11, color: colores.mutado, marginBottom: 3, fontFamily: fuentes.medio },
+  campoLote: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 12, paddingVertical: 11, paddingHorizontal: 12 },
+  campoLoteTexto: { fontSize: 13, color: colores.texto, fontFamily: fuentes.cuerpo, flex: 1 },
+  flecha: { fontSize: 12, color: colores.mutado },
+  fondoModal: { flex: 1, backgroundColor: 'rgba(15,23,42,0.45)', justifyContent: 'center', padding: 26 },
+  menu: { backgroundColor: colores.superficie, borderRadius: 16, padding: 10 },
+  tituloMenu: { fontFamily: fuentes.medio, fontSize: 12, color: colores.mutado, marginBottom: 6, paddingHorizontal: 4 },
+  opcion: { paddingVertical: 11, paddingHorizontal: 12, borderRadius: 10 },
+  opcionActiva: { backgroundColor: colores.celeste100 },
+  opcionTexto: { fontSize: 13, fontFamily: fuentes.medio, color: colores.texto },
+  vacio: { fontSize: 12, color: colores.mutado, padding: 10, fontFamily: fuentes.cuerpo },
 });

@@ -20,4 +20,7 @@ export class LoteOrmEntity {
 
   @Column({ name: 'umbral_stock_bajo', type: 'int', default: 20 })
   umbralStockBajo!: number;
+
+  @Column({ name: 'hielera_id', type: 'varchar', length: 10, nullable: true })
+  hieleraId!: string | null;
 }

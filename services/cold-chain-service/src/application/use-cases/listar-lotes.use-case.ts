@@ -24,6 +24,7 @@ export class ListarLotesUseCase {
       cantidad: l.cantidad,
       fechaCaducidad: l.fechaCaducidad.toISOString().slice(0, 10),
       umbralStockBajo: l.umbralStockBajo,
+      hieleraId: l.hieleraId,
       stockBajo: l.stockBajo(),
       caducado: l.estaCaducado(hoy),
     }));

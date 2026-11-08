@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Alerta, Boton, Campo, Tarjeta, Titulo } from '@/components/ui';
-import { colores } from '@/theme';
+import { colores, fuentes } from '@/theme';
 import { crearLote } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 
@@ -11,6 +11,7 @@ export default function NuevoLoteScreen() {
   const [cantidad, setCantidad] = useState('');
   const [fechaCaducidad, setFechaCaducidad] = useState('');
   const [umbral, setUmbral] = useState('20');
+  const [hielera, setHielera] = useState('');
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico'; texto: string } | null>(null);
   const [cargando, setCargando] = useState(false);
 
@@ -24,9 +25,10 @@ export default function NuevoLoteScreen() {
         cantidad: Number(cantidad),
         fechaCaducidad: fechaCaducidad.trim(),
         umbralStockBajo: Number(umbral) || 20,
+        hieleraId: hielera || undefined,
       });
-      setMensaje({ tipo: 'ok', texto: 'Lote ' + r.vacuna + ' · ' + r.numeroLote + ' dado de alta con ' + r.cantidad + ' dosis' });
-      setVacuna(''); setNumeroLote(''); setCantidad(''); setFechaCaducidad('');
+      setMensaje({ tipo: 'ok', texto: 'Lote ' + r.vacuna + ' · ' + r.numeroLote + ' dado de alta con ' + r.cantidad + ' dosis' + (r.hieleraId ? ' en ' + r.hieleraId : '') });
+      setVacuna(''); setNumeroLote(''); setCantidad(''); setFechaCaducidad(''); setHielera('');
     } catch (e) {
       setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo dar de alta el lote' });
     } finally {
@@ -43,6 +45,18 @@ export default function NuevoLoteScreen() {
         <Campo etiqueta="Cantidad de dosis" value={cantidad} onChangeText={setCantidad} keyboardType="number-pad" placeholder="100" />
         <Campo etiqueta="Fecha de caducidad (AAAA-MM-DD)" value={fechaCaducidad} onChangeText={setFechaCaducidad} placeholder="2027-06-30" />
         <Campo etiqueta="Umbral de stock bajo" value={umbral} onChangeText={setUmbral} keyboardType="number-pad" placeholder="20" />
+        <Text style={estilos.etiqueta}>¿En qué hielera se guarda?</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 7 }}>
+          {['H-01', 'H-02', 'H-03', 'H-04', 'H-05'].map((h) => (
+            <TouchableOpacity
+              key={h}
+              style={[estilos.chip, hielera === h ? estilos.chipActivo : null]}
+              onPress={() => setHielera(hielera === h ? '' : h)}
+            >
+              <Text style={[estilos.chipTexto, hielera === h ? { color: colores.primario700 } : null]}>🧊 {h}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <Boton
           titulo="Dar de alta el lote"
           onPress={enviar}
@@ -58,4 +72,8 @@ export default function NuevoLoteScreen() {
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
   contenido: { padding: 18, gap: 11 },
+  etiqueta: { fontSize: 11, color: colores.mutado, marginBottom: 3, fontFamily: fuentes.medio },
+  chip: { backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 12 },
+  chipActivo: { backgroundColor: colores.celeste100, borderColor: colores.primario600 },
+  chipTexto: { fontFamily: fuentes.medio, fontSize: 12.5, color: colores.texto },
 });

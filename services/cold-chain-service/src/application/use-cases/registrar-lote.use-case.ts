@@ -12,6 +12,7 @@ export interface LoteResumen {
   cantidad: number;
   fechaCaducidad: string;
   umbralStockBajo: number;
+  hieleraId: string | null;
 }
 
 export class RegistrarLoteUseCase {
@@ -42,6 +43,7 @@ export class RegistrarLoteUseCase {
       dto.cantidad,
       caducidad,
       dto.umbralStockBajo ?? 20,
+      dto.hieleraId?.trim() || null,
     );
     await this.lotes.guardar(lote);
 
@@ -52,6 +54,7 @@ export class RegistrarLoteUseCase {
       cantidad: lote.cantidad,
       fechaCaducidad: lote.fechaCaducidad.toISOString().slice(0, 10),
       umbralStockBajo: lote.umbralStockBajo,
+      hieleraId: lote.hieleraId,
     };
   }
 }

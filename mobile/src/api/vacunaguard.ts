@@ -21,6 +21,7 @@ export interface LoteResumen {
   cantidad: number;
   fechaCaducidad: string;
   umbralStockBajo: number;
+  hieleraId: string | null;
   stockBajo: boolean;
   caducado: boolean;
 }
@@ -137,7 +138,7 @@ export const vacunacionesDe = (id: string) =>
 export const registrarVacunacion = (dto: { ciudadanoId: string; vacuna: string; lote: string; numeroDosis: number; reaccionAdversa?: string }) =>
   peticion<{ registroId: string }>('registry', '/vacunaciones', { metodo: 'POST', cuerpo: dto });
 
-export const crearLote = (dto: { vacuna: string; numeroLote: string; cantidad: number; fechaCaducidad: string; umbralStockBajo?: number }) =>
+export const crearLote = (dto: { vacuna: string; numeroLote: string; cantidad: number; fechaCaducidad: string; umbralStockBajo?: number; hieleraId?: string }) =>
   peticion<LoteResumen>('coldChain', '/lotes', { metodo: 'POST', cuerpo: dto });
 
 export const registrarUsuario = (dto: { nombre: string; email: string; password: string; rol: UsuarioResumen['rol'] }) =>

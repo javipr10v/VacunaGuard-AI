@@ -20,6 +20,7 @@ export class TypeOrmLoteRepository implements LoteRepositoryPort {
       cantidad: l.cantidad,
       fechaCaducidad: l.fechaCaducidad.toISOString().slice(0, 10),
       umbralStockBajo: l.umbralStockBajo,
+      hieleraId: l.hieleraId,
     });
   }
 
@@ -51,6 +52,7 @@ export class TypeOrmLoteRepository implements LoteRepositoryPort {
       f.cantidad,
       new Date(f.fechaCaducidad),
       f.umbralStockBajo,
+      f.hieleraId ?? null,
     );
   }
 }

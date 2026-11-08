@@ -65,7 +65,12 @@ export default function RedFrioScreen() {
                 <Pildora estado={estado} />
               </View>
             </View>
-            <Text style={estilos.detalle}>Stock: {l.cantidad} dosis · umbral {l.umbralStockBajo} · caduca {l.fechaCaducidad}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 }}>
+              {l.hieleraId ? (
+                <Text style={estilos.hielera}>🧊 {l.hieleraId}</Text>
+              ) : null}
+              <Text style={estilos.detalle}>Stock: {l.cantidad} dosis · umbral {l.umbralStockBajo} · caduca {l.fechaCaducidad}</Text>
+            </View>
             <View style={estilos.barra}>
               <View style={[estilos.relleno, { width: pct + '%', backgroundColor: l.caducado ? colores.critico : l.stockBajo ? colores.advertencia : colores.primario500 }]} />
             </View>
@@ -82,7 +87,8 @@ const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
   contenido: { padding: 18, gap: 11 },
   nombre: { fontFamily: fuentes.medio, fontSize: 13.5, color: colores.texto },
-  detalle: { fontFamily: fuentes.cuerpo, fontSize: 11.5, color: colores.mutado, marginTop: 3 },
+  detalle: { fontFamily: fuentes.cuerpo, fontSize: 11.5, color: colores.mutado },
+  hielera: { fontFamily: fuentes.medio, fontSize: 10.5, color: colores.primario700, backgroundColor: colores.celeste100, borderRadius: 999, paddingVertical: 2, paddingHorizontal: 8, overflow: 'hidden' },
   barra: { height: 7, backgroundColor: '#f1f5f9', borderRadius: 999, overflow: 'hidden', marginTop: 8 },
   relleno: { height: '100%', borderRadius: 999 },
 });

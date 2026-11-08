@@ -8,6 +8,7 @@ export class Lote {
     private _cantidad: number,
     public readonly fechaCaducidad: Date,
     public readonly umbralStockBajo: number = 20,
+    public readonly hieleraId: string | null = null,
   ) {
     if (!vacuna.trim()) throw new DomainException('La vacuna es obligatoria');
     if (!numeroLote.trim()) throw new DomainException('El número de lote es obligatorio');
