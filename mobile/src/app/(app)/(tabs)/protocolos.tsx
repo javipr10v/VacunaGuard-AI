@@ -61,8 +61,8 @@ export default function ProtocolosScreen() {
         ))}
         {cargando ? (
           <View style={estilos.pensandoCaja}>
-            <Text style={estilos.pensando}>🧠 La IA está leyendo los documentos oficiales…</Text>
-            <Text style={estilos.pensandoDetalle}>Puede tardar hasta un minuto, no cierres la app</Text>
+            <Text style={estilos.pensando}>🧠 Consultando…</Text>
+            <Text style={estilos.pensandoDetalle}>Unos segundos, no cierres la app</Text>
           </View>
         ) : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>

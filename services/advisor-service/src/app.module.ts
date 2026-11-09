@@ -17,6 +17,7 @@ import { ConsultasController } from './infrastructure/http/consultas.controller'
 import { OllamaEmbeddingAdapter } from './infrastructure/llm/ollama-embedding.adapter';
 import { OllamaLlmAdapter } from './infrastructure/llm/ollama-llm.adapter';
 import { OpenRouterLlmAdapter } from './infrastructure/llm/openrouter-llm.adapter';
+import { GeminiLlmAdapter } from './infrastructure/llm/gemini-llm.adapter';
 import { EsquemaAdvisor } from './infrastructure/persistence/esquema-advisor';
 import { PgVectorFragmentoRepository } from './infrastructure/persistence/pgvector-fragmento.repository';
 import { JwtAuthGuard } from './infrastructure/security/jwt-auth.guard';
@@ -53,6 +54,11 @@ import { RolesGuard } from './infrastructure/security/roles.guard';
       provide: LLM_SERVICE,
       useFactory: (c: ConfigService) => {
         const proveedor = c.get<string>('LLM_PROVIDER') ?? 'ollama';
+        // Gemini es el modo rápido y general (capa gratuita de Google AI Studio);
+        // si no hay clave, cae a Ollama local para que siempre funcione.
+        if (proveedor === 'gemini' && c.get<string>('GEMINI_API_KEY')) {
+          return new GeminiLlmAdapter(c);
+        }
         if (proveedor === 'openrouter') return new OpenRouterLlmAdapter(c);
         return new OllamaLlmAdapter(c);
       },
@@ -72,6 +78,7 @@ import { RolesGuard } from './infrastructure/security/roles.guard';
           l,
           c.get<string>('LLM_MODEL') ?? 'llama3.2:3b',
           Number(c.get('EMBED_TOP_K') ?? 3),
+          (c.get<string>('LLM_PROVIDER') ?? 'ollama') !== 'ollama',
         ),
       inject: [FRAGMENTO_REPOSITORY, EMBEDDING_SERVICE, LLM_SERVICE, ConfigService],
     },

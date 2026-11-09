@@ -19,6 +19,14 @@ export interface ResultadoConsulta {
 
 const SIN_INFORMACION = 'No encontré esa información en los documentos de referencia.';
 
+const PROMPT_GENERAL = [
+  'Eres el asistente virtual de VacunaGuard AI, la plataforma de brigadas de vacunación en Chiapas.',
+  'Ayuda al brigadista, coordinador o administrador con CUALQUIER consulta: logística, cadena de frío, esquemas de vacunación, dudas administrativas, uso de la app, primeros auxilios básicos, etc.',
+  'Cuando la pregunta sea sobre vacunación, apóyate en los fragmentos de referencia proporcionados y cita entre corchetes [documento (año), p. X].',
+  'Si los fragmentos no cubren el tema, responde igualmente con tu conocimiento general, de forma útil y segura.',
+  'Responde en español, breve y práctico, con viñetas cuando ayude.',
+].join(' ');
+
 const PROMPT_SISTEMA = [
   'Eres el consultor de protocolos de vacunación de VacunaGuard.',
   'Responde ÚNICAMENTE con la información contenida en los fragmentos de referencia proporcionados.',
@@ -36,6 +44,7 @@ export class ConsultarProtocoloUseCase {
     private readonly llm: LlmPort,
     private readonly modelo: string,
     private readonly topK = 5,
+    private readonly asistenteGeneral = false,
   ) {}
 
   async ejecutar(dto: ConsultarProtocoloDto): Promise<ResultadoConsulta> {
@@ -54,7 +63,7 @@ export class ConsultarProtocoloUseCase {
       .join('\n\n');
 
     const respuesta = await this.llm.responder([
-      { rol: 'system', contenido: PROMPT_SISTEMA },
+      { rol: 'system', contenido: this.asistenteGeneral ? PROMPT_GENERAL : PROMPT_SISTEMA },
       {
         rol: 'user',
         contenido: 'Pregunta: ' + pregunta + '\n\nFragmentos de referencia:\n' + contexto,
