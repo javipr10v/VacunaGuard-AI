@@ -110,7 +110,7 @@ export default function CiudadanoScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   seccion: { fontFamily: fuentes.medio, fontSize: 12, color: colores.mutado, textTransform: 'uppercase', letterSpacing: 0.5 },
   etiqueta: { fontSize: 11, color: colores.mutado, marginBottom: 3, fontFamily: fuentes.medio },
   chip: { flex: 1, backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 12, paddingVertical: 10, alignItems: 'center' },

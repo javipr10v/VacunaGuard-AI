@@ -31,7 +31,7 @@ export default function PerfilScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: 'transparent' },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   nombre: { fontFamily: fuentes.medio, fontSize: 15, color: colores.texto },
   detalle: { fontFamily: fuentes.cuerpo, fontSize: 12, color: colores.mutado },
   rol: { fontFamily: fuentes.medio, fontSize: 11, color: colores.primario700, marginTop: 3 },

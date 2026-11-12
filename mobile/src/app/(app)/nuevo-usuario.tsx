@@ -54,7 +54,7 @@ export default function NuevoUsuarioScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   etiqueta: { fontSize: 11, color: colores.mutado, marginBottom: 3, fontFamily: fuentes.medio },
   chip: { borderWidth: 1.5, borderColor: colores.linea, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 14, backgroundColor: colores.superficie },
   chipActivo: { backgroundColor: colores.celeste100, borderColor: colores.primario600 },

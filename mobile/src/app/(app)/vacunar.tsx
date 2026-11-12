@@ -228,7 +228,7 @@ export default function VacunarScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   nombre: { fontFamily: fuentes.medio, fontSize: 14, color: colores.texto },
   detalle: { fontFamily: fuentes.cuerpo, fontSize: 12, color: colores.mutado },
   etiqueta: { fontSize: 11, color: colores.mutado, marginBottom: 3, fontFamily: fuentes.medio },

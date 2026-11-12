@@ -71,7 +71,7 @@ export default function NuevoLoteScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   etiqueta: { fontSize: 11, color: colores.mutado, marginBottom: 3, fontFamily: fuentes.medio },
   chip: { backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 12 },
   chipActivo: { backgroundColor: colores.celeste100, borderColor: colores.primario600 },

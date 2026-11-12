@@ -149,7 +149,7 @@ export default function UsuariosScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: colores.fondo },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   nombre: { fontFamily: fuentes.medio, fontSize: 13.5, color: colores.texto },
   detalle: { fontFamily: fuentes.cuerpo, fontSize: 11, color: colores.mutado },
   etiqueta: { fontFamily: fuentes.medio, fontSize: 10.5, color: colores.mutado, marginBottom: 3 },

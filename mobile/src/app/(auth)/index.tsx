@@ -66,9 +66,9 @@ export default function LoginScreen() {
 const estilos = StyleSheet.create({
   fondo: { flex: 1 },
   velo: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,47,46,0.78)' },
-  contenido: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 16 },
+  contenido: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 16, width: '100%', maxWidth: 560, alignSelf: 'center' },
   encabezado: { alignItems: 'center' },
   marca: { color: '#ffffff', fontSize: 30, fontFamily: fuentes.titulo, textShadowColor: 'rgba(0,0,0,0.4)', textShadowRadius: 8 },
-  tarjeta: { backgroundColor: 'rgba(255,255,255,0.97)', borderRadius: 20, padding: 18, gap: 10, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  tarjeta: { backgroundColor: 'rgba(255,255,255,0.97)', borderRadius: 20, padding: 18, gap: 10, width: '100%', maxWidth: 440, alignSelf: 'center', shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
   errorCampo: { fontFamily: fuentes.cuerpo, fontSize: 11, color: colores.critico, marginTop: -4 },
 });

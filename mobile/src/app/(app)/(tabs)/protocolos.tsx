@@ -93,7 +93,7 @@ export default function ProtocolosScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: 'transparent' },
-  contenido: { padding: 18, gap: 10, paddingBottom: 90 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   burbuja: { maxWidth: '88%', borderRadius: 14, padding: 10 },
   usuario: { alignSelf: 'flex-end', backgroundColor: colores.primario600, borderBottomRightRadius: 4 },
   ai: { alignSelf: 'flex-start', backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderBottomLeftRadius: 4 },

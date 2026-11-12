@@ -217,7 +217,7 @@ export default function RutasScreen() {
 
 const estilos = StyleSheet.create({
   fondo: { flex: 1, backgroundColor: 'transparent' },
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   mapa: { height: 250, borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: colores.linea },
   filaPill: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pillTexto: { fontSize: 11.5, color: colores.mutado, fontFamily: fuentes.cuerpo },

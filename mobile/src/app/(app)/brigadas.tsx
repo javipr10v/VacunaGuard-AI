@@ -110,7 +110,7 @@ export default function BrigadasScreen() {
 }
 
 const estilos = StyleSheet.create({
-  contenido: { padding: 18, gap: 11 },
+  contenido: { padding: 18, gap: 11, width: '100%', maxWidth: 680, alignSelf: 'center' },
   clave: { fontFamily: fuentes.titulo, fontSize: 14, color: colores.primario700 },
   nombre: { fontFamily: fuentes.cuerpo, fontSize: 12, color: colores.mutado },
 });
