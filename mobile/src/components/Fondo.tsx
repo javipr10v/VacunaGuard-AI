@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export function Fondo({ children }: { children: ReactNode }) {
   return (
     <ImageBackground source={require('../../assets/login-bg.jpg')} style={estilos.fondo} resizeMode="cover">
-      <View style={estilos.velo}>{children}</View>
+      <LinearGradient colors={['rgba(224,242,254,0.55)', 'rgba(244,247,251,0.92)', 'rgba(224,242,254,0.82)']} style={estilos.velo}>{children}</LinearGradient>
     </ImageBackground>
   );
 }

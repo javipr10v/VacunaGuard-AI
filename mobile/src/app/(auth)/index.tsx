@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ImageBackground, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/context/AuthContext';
 import { Boton, Campo, Alerta } from '@/components/ui';
 import { SelectorRol } from '@/components/SelectorRol';
@@ -41,7 +42,7 @@ export default function LoginScreen() {
 
   return (
     <ImageBackground source={require('../../../assets/login-bg.jpg')} style={estilos.fondo} resizeMode="cover">
-      <View style={estilos.velo} />
+      <LinearGradient colors={['rgba(6,60,70,0.88)', 'rgba(13,148,136,0.5)', 'rgba(4,47,46,0.82)']} style={estilos.velo} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
           <View style={estilos.encabezado}>

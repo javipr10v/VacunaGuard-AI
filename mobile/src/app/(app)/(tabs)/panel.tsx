@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,12 +64,14 @@ export default function PanelScreen() {
     ],
   };
   const tiles = porRol[rol] ?? porRol.BRIGADISTA;
+  const PALETA = ['#dbeafe', '#dcfce7', '#fef3c7', '#ede9fe', '#fce7f3', '#cffafe'];
+  const ICONOS = ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#0891b2'];
   const iniciales = (usuario?.nombre ?? 'VG').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colores.fondo }} contentContainerStyle={{ paddingBottom: 28 }}>
-      <ImageBackground source={require('../../../../assets/login-bg.jpg')} style={estilos.hero} resizeMode="cover">
-        <View style={estilos.heroVelo}>
+      <ImageBackground source={require('../../../../assets/panel-hero.jpg')} style={estilos.hero} resizeMode="cover">
+        <LinearGradient colors={['rgba(4,47,46,0.82)', 'rgba(13,148,136,0.45)', 'rgba(4,47,46,0.15)']} style={estilos.heroVelo}>
           <SafeAreaView edges={['top']}>
             <View style={estilos.encabezado}>
               <Avatar iniciales={iniciales} />
@@ -81,14 +84,23 @@ export default function PanelScreen() {
               </View>
             </View>
           </SafeAreaView>
-        </View>
+        </LinearGradient>
       </ImageBackground>
 
       <View style={estilos.cuerpo}>
         <View style={estilos.estadisticas}>
-          <View style={estilos.stat}><Text style={estilos.statNum}>{lotes.length}</Text><Text style={estilos.statEtiqueta}>Lotes</Text></View>
-          <View style={estilos.stat}><Text style={[estilos.statNum, { color: criticos.length > 0 ? colores.critico : colores.ok }]}>{criticos.length}</Text><Text style={estilos.statEtiqueta}>Alertas</Text></View>
-          <View style={estilos.stat}><Text style={[estilos.statNum, { color: pendientes > 0 ? colores.advertencia : colores.mutado }]}>{pendientes}</Text><Text style={estilos.statEtiqueta}>En cola</Text></View>
+          <View style={estilos.stat}>
+            <View style={[estilos.statIcono, { backgroundColor: '#dbeafe' }]}><Text style={{ fontSize: 13 }}>💉</Text></View>
+            <Text style={estilos.statNum}>{lotes.length}</Text><Text style={estilos.statEtiqueta}>Lotes</Text>
+          </View>
+          <View style={estilos.stat}>
+            <View style={[estilos.statIcono, { backgroundColor: '#fef3c7' }]}><Text style={{ fontSize: 13 }}>⚠️</Text></View>
+            <Text style={[estilos.statNum, { color: criticos.length > 0 ? colores.critico : colores.ok }]}>{criticos.length}</Text><Text style={estilos.statEtiqueta}>Alertas</Text>
+          </View>
+          <View style={estilos.stat}>
+            <View style={[estilos.statIcono, { backgroundColor: '#dcfce7' }]}><Text style={{ fontSize: 13 }}>📦</Text></View>
+            <Text style={[estilos.statNum, { color: pendientes > 0 ? colores.advertencia : colores.mutado }]}>{pendientes}</Text><Text style={estilos.statEtiqueta}>En cola</Text>
+          </View>
         </View>
 
         <View style={estilos.filaPill}>
@@ -108,9 +120,11 @@ export default function PanelScreen() {
 
         <Text style={estilos.seccion}>Acciones</Text>
         <View style={estilos.grilla}>
-          {tiles.map((t) => (
+          {tiles.map((t, i) => (
             <TouchableOpacity key={t.ruta} style={estilos.tile} onPress={() => router.push(t.ruta)}>
-              <Ionicons name={t.icono} size={24} color={colores.primario600} />
+              <View style={[estilos.tileIcono, { backgroundColor: PALETA[i % 6] }]}>
+                <Ionicons name={t.icono} size={20} color={ICONOS[i % 6]} />
+              </View>
               <Text style={estilos.tileTexto}>{t.etiqueta}</Text>
             </TouchableOpacity>
           ))}
@@ -131,6 +145,7 @@ const estilos = StyleSheet.create({
   cuerpo: { padding: 18, gap: 12, width: '100%', maxWidth: 1040, alignSelf: 'center' },
   estadisticas: { flexDirection: 'row', gap: 10, marginTop: -20 },
   stat: { flex: 1, backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 14, paddingVertical: 12, alignItems: 'center', shadowColor: '#0f172a', shadowOpacity: 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 3 },
+  statIcono: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   statNum: { fontFamily: fuentes.titulo, fontSize: 20, color: colores.primario700 },
   statEtiqueta: { fontFamily: fuentes.cuerpo, fontSize: 10.5, color: colores.mutado },
   filaPill: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -138,6 +153,7 @@ const estilos = StyleSheet.create({
   pillTexto: { fontSize: 11.5, color: colores.mutado, fontFamily: fuentes.cuerpo },
   seccion: { fontFamily: fuentes.medio, fontSize: 12, color: colores.mutado, textTransform: 'uppercase', letterSpacing: 0.5 },
   grilla: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  tile: { width: '47%', flexGrow: 1, backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 14, paddingVertical: 16, alignItems: 'center', gap: 6 },
+  tile: { width: '47%', flexGrow: 1, backgroundColor: colores.superficie, borderWidth: 1, borderColor: colores.linea, borderRadius: 14, paddingVertical: 14, alignItems: 'center', gap: 6 },
+  tileIcono: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 2 },
   tileTexto: { fontSize: 12, color: '#334155', fontFamily: fuentes.medio },
 });
