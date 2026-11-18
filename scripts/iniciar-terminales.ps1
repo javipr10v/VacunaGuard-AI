@@ -29,7 +29,7 @@ $cmdMetro = 'Write-Host "=== Metro (app movil) ==="; Set-Location "' + $metroDir
 Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-NoExit', '-ExecutionPolicy', 'Bypass', '-Command', $cmdMetro
 
 # App web en el navegador (terminal visible)
-$cmdWeb = 'Write-Host "=== App web (laptop: http://localhost:8090) ==="; Set-Location "' + $raiz + 'vacunaguard-app"; npx expo export --platform web; npx --yes serve dist -l 8090'
+$cmdWeb = 'Write-Host "=== App web (laptop: http://localhost:9090) ==="; Set-Location "' + $raiz + 'vacunaguard-app"; $env:EXPO_PUBLIC_API_BASE='/api'; npx expo export --platform web; node 'C:\\Users\\javie\\OneDrive\\Documentos\\deepseek-harness\\default-workspace\\wsl-scripts\\proxy-publico.cjs''
 Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-NoExit', '-ExecutionPolicy', 'Bypass', '-Command', $cmdWeb
 
 Start-Sleep -Seconds 12
