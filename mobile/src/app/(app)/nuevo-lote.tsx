@@ -4,8 +4,10 @@ import { Alerta, Boton, Campo, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
 import { crearLote } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
+import { useSync } from '@/context/SyncContext';
 
 export default function NuevoLoteScreen() {
+  const { encolarRegistro } = useSync();
   const [vacuna, setVacuna] = useState('');
   const [numeroLote, setNumeroLote] = useState('');
   const [cantidad, setCantidad] = useState('');
@@ -30,7 +32,20 @@ export default function NuevoLoteScreen() {
       setMensaje({ tipo: 'ok', texto: 'Lote ' + r.vacuna + ' · ' + r.numeroLote + ' dado de alta con ' + r.cantidad + ' dosis' + (r.hieleraId ? ' en ' + r.hieleraId : '') });
       setVacuna(''); setNumeroLote(''); setCantidad(''); setFechaCaducidad(''); setHielera('');
     } catch (e) {
-      setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo dar de alta el lote' });
+      if (e instanceof ErrorApi && e.message.startsWith('No se pudo conectar')) {
+        encolarRegistro('lote', {
+          vacuna: vacuna.trim(),
+          numeroLote: numeroLote.trim(),
+          cantidad: Number(cantidad),
+          fechaCaducidad: fechaCaducidad.trim(),
+          umbralStockBajo: Number(umbral) || 20,
+          hieleraId: hielera || undefined,
+        });
+        setMensaje({ tipo: 'ok', texto: 'Lote guardado en modo campo · se enviará al reconectar' });
+        setVacuna(''); setNumeroLote(''); setCantidad(''); setFechaCaducidad(''); setHielera('');
+      } else {
+        setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo dar de alta el lote' });
+      }
     } finally {
       setCargando(false);
     }

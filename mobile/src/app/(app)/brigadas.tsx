@@ -5,6 +5,7 @@ import { actualizarBrigada, crearBrigada, eliminarBrigada, listarBrigadas, type 
 import { ErrorApi } from '@/api/client';
 import { Alerta, Boton, Campo, Tarjeta, Titulo } from '@/components/ui';
 import { Fondo } from '@/components/Fondo';
+import { guardarCache, leerCache } from '@/storage/cola';
 import { colores, fuentes } from '@/theme';
 
 export default function BrigadasScreen() {
@@ -16,8 +17,18 @@ export default function BrigadasScreen() {
 
   const cargar = useCallback(() => {
     listarBrigadas()
-      .then(setBrigadas)
-      .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se pudieron cargar las brigadas'));
+      .then((b) => { setBrigadas(b); guardarCache('brigadas', JSON.stringify(b)); })
+      .catch((e: unknown) => {
+        const cache = leerCache('brigadas');
+        if (cache) {
+          try {
+            setBrigadas(JSON.parse(cache) as BrigadaResumen[]);
+            setError('');
+            return;
+          } catch { /* caché dañada */ }
+        }
+        setError(e instanceof ErrorApi ? e.message : 'No se pudieron cargar las brigadas');
+      });
   }, []);
 
   useFocusEffect(

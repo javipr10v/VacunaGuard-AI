@@ -3,7 +3,7 @@ import { AppState } from 'react-native';
 import * as Network from 'expo-network';
 import { iniciarBase } from '@/storage/db';
 import { eliminarDeCola, encolar, pendientes, type TipoRegistro } from '@/storage/cola';
-import { enviarUbicacion, registrarCiudadano, registrarVacunacion } from '@/api/vacunaguard';
+import { crearLote, enviarUbicacion, registrarCiudadano, registrarVacunacion } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 
 interface EstadoSync {
@@ -54,6 +54,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       await registrarCiudadano(item.payload as { curp: string; nombre: string; fechaNacimiento: string });
     } else if (item.tipo === 'vacunacion') {
       await registrarVacunacion(item.payload as { ciudadanoId: string; vacuna: string; lote: string; numeroDosis: number; reaccionAdversa?: string });
+    } else if (item.tipo === 'lote') {
+      await crearLote(item.payload as { vacuna: string; numeroLote: string; cantidad: number; fechaCaducidad: string; umbralStockBajo?: number; hieleraId?: string });
     } else {
       await enviarUbicacion(item.payload.latitud as number, item.payload.longitud as number);
     }

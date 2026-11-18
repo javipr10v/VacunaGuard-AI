@@ -7,10 +7,11 @@ import { colores, fuentes } from '@/theme';
 import { actualizarUsuario, eliminarUsuario, listarUsuarios, type UsuarioResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { Fondo } from '@/components/Fondo';
+import { guardarCache, leerCache } from '@/storage/cola';
 
 export default function UsuariosScreen() {
   const [usuarios, setUsuarios] = useState<UsuarioResumen[]>([]);
-  const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico'; texto: string } | null>(null);
+  const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico' | 'advertencia'; texto: string } | null>(null);
   const [brigadas, setBrigadas] = useState<Record<string, string>>({});
   const [editando, setEditando] = useState<UsuarioResumen | null>(null);
   const [editNombre, setEditNombre] = useState('');
@@ -20,7 +21,16 @@ export default function UsuariosScreen() {
     try {
       const u = await listarUsuarios();
       setUsuarios(u);
+      guardarCache('usuarios', JSON.stringify(u));
     } catch (e) {
+      const cache = leerCache('usuarios');
+      if (cache) {
+        try {
+          setUsuarios(JSON.parse(cache) as UsuarioResumen[]);
+          setMensaje({ tipo: 'advertencia', texto: 'Lista guardada · servicio de personal sin conexión' });
+          return;
+        } catch { /* caché dañada */ }
+      }
       setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'No se pudo cargar' });
     }
   }, []);

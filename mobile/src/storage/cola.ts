@@ -1,6 +1,6 @@
 import { obtenerDb } from './db';
 
-export type TipoRegistro = 'ciudadano' | 'vacunacion' | 'ubicacion';
+export type TipoRegistro = 'ciudadano' | 'vacunacion' | 'ubicacion' | 'lote';
 
 export interface ItemCola {
   id: number;
