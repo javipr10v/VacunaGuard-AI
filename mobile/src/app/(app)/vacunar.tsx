@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Alerta, Avatar, Boton, Campo, Pildora, Tarjeta, Titulo } from '@/components/ui';
 import { colores, fuentes } from '@/theme';
@@ -17,6 +17,7 @@ export default function VacunarScreen() {
   const [lote, setLote] = useState('');
   const [lotes, setLotes] = useState<LoteResumen[]>([]);
   const [menuLote, setMenuLote] = useState(false);
+  const lotesDisponibles = lotes.filter((l) => !l.caducado && l.cantidad > 0);
   const [dosis, setDosis] = useState('');
   const [historial, setHistorial] = useState<VacunacionResumen[]>([]);
   const [editandoCiudadano, setEditandoCiudadano] = useState(false);
@@ -38,6 +39,24 @@ export default function VacunarScreen() {
       }
     }
   };
+
+  // Siembra de la caché al abrir la pantalla (sin setState síncrono en el efecto)
+  useEffect(() => {
+    let activo = true;
+    listarLotes()
+      .then((ls) => {
+        if (!activo) return;
+        setLotes(ls);
+        guardarCache('lotes', JSON.stringify(ls));
+      })
+      .catch(() => {
+        const cache = leerCache('lotes');
+        if (cache && activo) {
+          try { setLotes(JSON.parse(cache) as LoteResumen[]); } catch { /* caché dañada */ }
+        }
+      });
+    return () => { activo = false; };
+  }, []);
 
   const buscar = async () => {
     setMensaje(null);
@@ -182,12 +201,20 @@ export default function VacunarScreen() {
           </Tarjeta>
           <Tarjeta>
             <Text style={estilos.etiqueta}>Vacuna y lote a aplicar</Text>
-            <TouchableOpacity style={estilos.campoLote} onPress={() => setMenuLote(true)}>
-              <Text style={[estilos.campoLoteTexto, !lote ? { color: '#94a3b8' } : null]}>
-                {lote ? '💉 ' + vacuna + ' · ' + lote + ' · quedan ' + (lotes.find((x) => x.numeroLote === lote)?.cantidad ?? '—') : 'Elige del inventario…'}
-              </Text>
-              <Text style={estilos.flecha}>▾</Text>
-            </TouchableOpacity>
+            {lotesDisponibles.length > 0 ? (
+              <TouchableOpacity style={estilos.campoLote} onPress={() => setMenuLote(true)}>
+                <Text style={[estilos.campoLoteTexto, !lote ? { color: '#94a3b8' } : null]}>
+                  {lote ? '💉 ' + vacuna + ' · ' + lote + ' · quedan ' + (lotes.find((x) => x.numeroLote === lote)?.cantidad ?? '—') : 'Elige del inventario…'}
+                </Text>
+                <Text style={estilos.flecha}>▾</Text>
+              </TouchableOpacity>
+            ) : (
+              <>
+                <Alerta tipo="advertencia" titulo="Inventario sin conexión" detalle="Escribe la vacuna y el lote: la dosis se registrará y el stock se actualizará al reconectar" />
+                <Campo etiqueta="Vacuna" value={vacuna} onChangeText={setVacuna} placeholder="Hepatitis B" />
+                <Campo etiqueta="Lote" value={lote} onChangeText={setLote} placeholder="L-HEP-001" />
+              </>
+            )}
             <Campo etiqueta="Número de dosis" value={dosis} onChangeText={setDosis} keyboardType="number-pad" placeholder="2" />
             <Boton titulo="Aplicar y registrar" onPress={aplicar} cargando={cargando} deshabilitado={!vacuna.trim() || !lote.trim() || !dosis.trim()} />
           </Tarjeta>
