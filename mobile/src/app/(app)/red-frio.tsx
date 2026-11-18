@@ -6,6 +6,7 @@ import { colores, fuentes } from '@/theme';
 import { eliminarLote, listarLotes, type LoteResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useAuth } from '@/context/AuthContext';
+import { guardarCache, leerCache } from '@/storage/cola';
 import { Fondo } from '@/components/Fondo';
 
 export default function RedFrioScreen() {
@@ -37,8 +38,16 @@ export default function RedFrioScreen() {
     useCallback(() => {
       let activo = true;
       listarLotes()
-        .then((l) => { if (activo) setLotes(l); })
-        .catch(() => { if (activo) setError(true); });
+        .then((l) => { if (!activo) return; setLotes(l); guardarCache('lotes', JSON.stringify(l)); })
+        .catch(() => {
+          if (!activo) return;
+          const cache = leerCache('lotes');
+          if (cache) {
+            try { setLotes(JSON.parse(cache) as LoteResumen[]); setError(false); } catch { setError(true); }
+          } else {
+            setError(true);
+          }
+        });
       return () => { activo = false; };
     }, []),
   );

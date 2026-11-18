@@ -5,6 +5,7 @@ import { colores, fuentes } from '@/theme';
 import { actualizarCiudadano, buscarCiudadano, eliminarCiudadano, listarLotes, registrarVacunacion, vacunacionesDe, type ConsultaCiudadanoResumen, type LoteResumen, type VacunacionResumen } from '@/api/vacunaguard';
 import { ErrorApi } from '@/api/client';
 import { useSync } from '@/context/SyncContext';
+import { guardarCache, leerCache } from '@/storage/cola';
 import { useAuth } from '@/context/AuthContext';
 
 export default function VacunarScreen() {
@@ -21,15 +22,20 @@ export default function VacunarScreen() {
   const [editandoCiudadano, setEditandoCiudadano] = useState(false);
   const [editNombre, setEditNombre] = useState('');
   const [editFecha, setEditFecha] = useState('');
-  const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico'; texto: string } | null>(null);
+  const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'critico' | 'advertencia'; texto: string } | null>(null);
   const [cargando, setCargando] = useState(false);
 
   const refrescarLotes = async () => {
     try {
       const ls = await listarLotes();
       setLotes(ls);
+      guardarCache('lotes', JSON.stringify(ls));
     } catch {
-      // sin conexión: se mantiene la lista anterior
+      // sin conexión o servicio caído: usar el inventario guardado en caché
+      const cache = leerCache('lotes');
+      if (cache) {
+        try { setLotes(JSON.parse(cache) as LoteResumen[]); } catch { /* caché dañada */ }
+      }
     }
   };
 
@@ -45,11 +51,34 @@ export default function VacunarScreen() {
       } else {
         const c = r as ConsultaCiudadanoResumen;
         setCiudadano(c);
-        const h = await vacunacionesDe(c.id);
+        let h: VacunacionResumen[] = [];
+        try {
+          h = await vacunacionesDe(c.id);
+        } catch {
+          h = [];
+        }
         setHistorial(h);
+        guardarCache('ciudadano-' + c.curp, JSON.stringify({ ciudadano: c, historial: h }));
       }
     } catch (e) {
-      setMensaje({ tipo: 'critico', texto: e instanceof ErrorApi ? e.message : 'Error al buscar' });
+      const err = e instanceof ErrorApi ? e.message : 'Error al buscar';
+      if (err.startsWith('No se pudo conectar') || err === 'Error al buscar') {
+        const cache = leerCache('ciudadano-' + curp.trim().toUpperCase());
+        if (cache) {
+          try {
+            const guardado = JSON.parse(cache) as { ciudadano: ConsultaCiudadanoResumen; historial: VacunacionResumen[] };
+            setCiudadano(guardado.ciudadano);
+            setHistorial(guardado.historial);
+            setMensaje({ tipo: 'advertencia', texto: 'Datos del ciudadano en modo sin conexión' });
+          } catch {
+            setMensaje({ tipo: 'critico', texto: 'Sin conexión y sin datos guardados de este ciudadano' });
+          }
+        } else {
+          setMensaje({ tipo: 'critico', texto: 'Sin conexión y sin datos guardados de este ciudadano' });
+        }
+      } else {
+        setMensaje({ tipo: 'critico', texto: err });
+      }
     } finally {
       setCargando(false);
     }
