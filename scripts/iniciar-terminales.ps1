@@ -14,7 +14,7 @@ $servicios = @(
 )
 foreach ($s in $servicios) {
   $cmd = 'Write-Host "=== ' + $s[0] + ' ==="; wsl.exe -d Ubuntu -- bash /home/javii/' + $s[1]
-  Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-Command', $cmd
+  Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-NoExit', '-Command', $cmd
   Write-Host ('ventana abierta: ' + $s[0])
 }
 
@@ -26,11 +26,11 @@ $token = (Get-Content (Join-Path $env:USERPROFILE '.expo-token') -ErrorAction Si
 if ($token) { $env:EXPO_TOKEN = $token.Trim() }
 $metroDir = Join-Path $raiz 'vacunaguard-app'
 $cmdMetro = 'Write-Host "=== Metro (app movil) ==="; Set-Location "' + $metroDir + '"; npx expo start'
-Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $cmdMetro
+Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-NoExit', '-ExecutionPolicy', 'Bypass', '-Command', $cmdMetro
 
 # App web en el navegador (terminal visible)
 $cmdWeb = 'Write-Host "=== App web (laptop: http://localhost:8090) ==="; Set-Location "' + $raiz + 'vacunaguard-app"; npx expo export --platform web; npx --yes serve dist -l 8090'
-Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $cmdWeb
+Start-Process 'powershell.exe' -ArgumentList '-NoProfile', '-NoExit', '-ExecutionPolicy', 'Bypass', '-Command', $cmdWeb
 
 Start-Sleep -Seconds 12
 Write-Host ''
